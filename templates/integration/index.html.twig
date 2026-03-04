@@ -57,10 +57,69 @@
                         <div class="mcp-client-pane active" id="mcp-pane-claude-desktop">
                             <div class="api-helper-item">
                                 <label><i class="fas fa-desktop"></i> Claude Desktop</label>
-                                <p class="mcp-hint">{{ 'integration.mcp.claude_desktop_hint'|trans|default('Add this to your Claude Desktop settings file:') }}</p>
-                                <p class="mcp-path"><code>~/.config/Claude/claude_desktop_config.json</code> (Linux) or <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> (macOS)</p>
-                                <div class="curl-command-wrapper">
-                                    <pre><code id="mcpClaudeDesktop">{
+
+                                {# Extension Install - Recommended #}
+                                <div class="mcp-extension-section">
+                                    <div class="mcp-extension-header">
+                                        <span class="mcp-badge-recommended">{{ 'integration.mcp.recommended'|trans|default('Recommended') }}</span>
+                                        <span class="mcp-extension-title">{{ 'integration.mcp.install_extension'|trans|default('Install Extension') }}</span>
+                                    </div>
+                                    <p class="mcp-extension-desc">{{ 'integration.mcp.extension_desc'|trans|default('The easiest way to connect Claude Desktop to Workoflow. No configuration files needed.') }}</p>
+
+                                    <div class="mcp-install-methods">
+                                        {# Method 1: Valantic Team #}
+                                        <div class="mcp-install-method">
+                                            <div class="mcp-install-method-header">
+                                                <i class="fas fa-building"></i>
+                                                <strong>{{ 'integration.mcp.valantic_team'|trans|default('Valantic Team Account') }}</strong>
+                                            </div>
+                                            <ol class="mcp-install-steps">
+                                                <li>{{ 'integration.mcp.step_open_claude'|trans|default('Open Claude Desktop') }}</li>
+                                                <li>{{ 'integration.mcp.step_extensions'|trans|default('Go to Settings &rarr; Extensions') }}</li>
+                                                <li>{{ 'integration.mcp.step_search'|trans|default('Search for <strong>Workoflow</strong> in the marketplace') }}</li>
+                                                <li>{{ 'integration.mcp.step_install'|trans|default('Click <strong>Install</strong>') }}</li>
+                                                <li>{{ 'integration.mcp.step_enter_token'|trans|default('Enter your Workoflow token when prompted') }}</li>
+                                            </ol>
+                                        </div>
+
+                                        {# Method 2: Manual Extension Install #}
+                                        <div class="mcp-install-method">
+                                            <div class="mcp-install-method-header">
+                                                <i class="fas fa-user"></i>
+                                                <strong>{{ 'integration.mcp.other_accounts'|trans|default('Other Accounts') }}</strong>
+                                            </div>
+                                            <ol class="mcp-install-steps">
+                                                <li>
+                                                    <a href="https://github.com/valantic-CEC-Deutschland-GmbH/workoflow-mcp/releases/download/extension-v1.0.0/workoflow-1.0.0.mcpb" class="mcp-download-link" download>
+                                                        <i class="fas fa-download"></i> {{ 'integration.mcp.download_extension'|trans|default('Download Extension (.mcpb)') }}
+                                                    </a>
+                                                </li>
+                                                <li>{{ 'integration.mcp.step_open_claude'|trans|default('Open Claude Desktop') }}</li>
+                                                <li>{{ 'integration.mcp.step_extensions'|trans|default('Go to Settings &rarr; Extensions') }}</li>
+                                                <li>{{ 'integration.mcp.step_drag'|trans|default('Drag the <code>.mcpb</code> file into the install area') }}</li>
+                                                <li>{{ 'integration.mcp.step_enter_token'|trans|default('Enter your Workoflow token when prompted') }}</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+
+                                    <p class="mcp-token-hint">
+                                        <i class="fas fa-key"></i>
+                                        {{ 'integration.mcp.token_hint'|trans|default('Your Workoflow token is available on your') }}
+                                        <a href="{{ path('app_profile') }}">{{ 'integration.mcp.profile_page'|trans|default('Profile page') }}</a>.
+                                    </p>
+                                </div>
+
+                                {# Advanced: Manual JSON Configuration #}
+                                <div class="mcp-advanced-section">
+                                    <button type="button" class="mcp-advanced-toggle" onclick="toggleAdvancedConfig(this)">
+                                        <i class="fas fa-chevron-right"></i>
+                                        {{ 'integration.mcp.advanced_manual'|trans|default('Advanced: Manual JSON Configuration') }}
+                                    </button>
+                                    <div class="mcp-advanced-content" style="display: none;">
+                                        <p class="mcp-hint">{{ 'integration.mcp.claude_desktop_hint'|trans|default('Add this to your Claude Desktop settings file:') }}</p>
+                                        <p class="mcp-path"><code>~/.config/Claude/claude_desktop_config.json</code> (Linux) or <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> (macOS)</p>
+                                        <div class="curl-command-wrapper">
+                                            <pre><code id="mcpClaudeDesktop">{
   "mcpServers": {
     "workoflow": {
       "type": "http",
@@ -71,9 +130,11 @@
     }
   }
 }</code></pre>
-                                    <button type="button" class="btn btn-copy btn-sm" onclick="copySkillsCurl(this, 'mcpClaudeDesktop')">
-                                        <i class="fas fa-copy"></i>
-                                    </button>
+                                            <button type="button" class="btn btn-copy btn-sm" onclick="copySkillsCurl(this, 'mcpClaudeDesktop')">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -326,6 +387,19 @@ function copySkillsCurl(btn, elementId) {
             btn.classList.remove('copied');
         }, 2000);
     });
+}
+
+// Toggle advanced config section
+function toggleAdvancedConfig(btn) {
+    const content = btn.nextElementSibling;
+    const icon = btn.querySelector('i');
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        icon.classList.replace('fa-chevron-right', 'fa-chevron-down');
+    } else {
+        content.style.display = 'none';
+        icon.classList.replace('fa-chevron-down', 'fa-chevron-right');
+    }
 }
 
 // MCP client tab switching

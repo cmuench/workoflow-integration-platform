@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 2026-03-04
+
+### Changed
+- **Claude Desktop setup simplified** — The Claude Desktop connection guide now recommends installing the Workoflow extension instead of manually editing JSON config files. Valantic team users can find it in the marketplace; others can download and drag-install it with one click. Manual configuration is still available under "Advanced"
+
 ## 2026-02-26
 
 ### Added
