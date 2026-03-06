@@ -93,7 +93,13 @@ Tips: Use OR to include synonyms and translations (German+English) for bilingual
                         'name' => 'maxLength',
                         'type' => 'integer',
                         'required' => false,
-                        'description' => 'Maximum characters to extract (default: 5000, max: 50000)'
+                        'description' => 'Maximum characters to extract (default: 5000, max: 50000). Ignored when full=true.'
+                    ],
+                    [
+                        'name' => 'full',
+                        'type' => 'boolean',
+                        'required' => false,
+                        'description' => 'Set to true to read the ENTIRE document without truncation (up to 500,000 characters). Only use when the user explicitly requests the document content. Large documents consume significantly more tokens. When true, maxLength is ignored.'
                     ]
                 ]
             ),
@@ -204,7 +210,8 @@ Tips: Use OR to include synonyms and translations (German+English) for bilingual
                 $parameters['siteId'],
                 $parameters['itemId'],
                 min($parameters['maxLength'] ?? 5000, 50000),
-                $parameters['driveId'] ?? null
+                $parameters['driveId'] ?? null,
+                filter_var($parameters['full'] ?? false, FILTER_VALIDATE_BOOLEAN)
             ),
             'sharepoint_read_page' => $this->sharePointService->readPage(
                 $credentials,

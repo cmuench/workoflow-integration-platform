@@ -618,12 +618,17 @@ class SharePointService
      * @param string $siteId Site ID
      * @param string $itemId Document item ID
      * @param int $maxLength Maximum content length to return (default 5000)
+     * @param string|null $driveId Optional drive ID for direct access
+     * @param bool $full When true, bypass truncation limits (up to 500k chars, 25MB file size)
      * @return array Document content and metadata
      */
-    public function readDocument(array $credentials, string $siteId, string $itemId, int $maxLength = 5000, ?string $driveId = null): array
+    public function readDocument(array $credentials, string $siteId, string $itemId, int $maxLength = 5000, ?string $driveId = null, bool $full = false): array
     {
         try {
-            error_log('Reading SharePoint document content - SiteID: ' . $siteId . ', ItemID: ' . $itemId . ($driveId ? ', DriveID: ' . $driveId : ''));
+            $effectiveMaxLength = $full ? 500000 : $maxLength;
+            $fileSizeLimit = $full ? 26214400 : 10485760; // 25MB vs 10MB
+
+            error_log('Reading SharePoint document content - SiteID: ' . $siteId . ', ItemID: ' . $itemId . ($driveId ? ', DriveID: ' . $driveId : '') . ($full ? ', FULL MODE' : ''));
 
             // Prioritize driveId-based access if provided (more reliable from search results)
             if (!empty($driveId)) {
@@ -702,14 +707,15 @@ class SharePointService
             error_log('Document details: ' . $fileName . ' (' . $mimeType . ', ' . $size . ' bytes)');
 
             // For very large files, provide metadata only with size warning
-            if ($size > 10485760) { // 10MB
+            if ($size > $fileSizeLimit) {
                 return [
                     'warning' => 'Document is very large (' . round($size / 1048576, 1) . ' MB). Content extraction limited to first part of document.',
                     'metadata' => $metadata,
-                    'content' => $this->extractFirstPartOfLargeDocument($credentials, $driveEndpoint, $itemId, $maxLength),
-                    'contentLength' => $maxLength,
+                    'content' => $this->extractFirstPartOfLargeDocument($credentials, $driveEndpoint, $itemId, $effectiveMaxLength),
+                    'contentLength' => $effectiveMaxLength,
                     'truncated' => true,
-                    'fullSize' => $size
+                    'fullSize' => $size,
+                    'fullMode' => $full
                 ];
             }
 
@@ -755,8 +761,8 @@ class SharePointService
 
                 // Truncate if needed
                 $truncated = false;
-                if (strlen($content) > $maxLength) {
-                    $content = substr($content, 0, $maxLength);
+                if (strlen($content) > $effectiveMaxLength) {
+                    $content = substr($content, 0, $effectiveMaxLength);
                     $truncated = true;
                 }
 
@@ -765,7 +771,8 @@ class SharePointService
                     'content' => $content,
                     'contentLength' => strlen($content),
                     'truncated' => $truncated,
-                    'mimeType' => $mimeType
+                    'mimeType' => $mimeType,
+                    'fullMode' => $full
                 ];
             }
 
@@ -783,13 +790,13 @@ class SharePointService
                 // Process based on mime type
                 if (str_contains($mimeType, 'application/pdf')) {
                     // Extract text from PDF
-                    $content = $this->extractTextFromPdf($binaryContent, $maxLength);
+                    $content = $this->extractTextFromPdf($binaryContent, $effectiveMaxLength);
                 } elseif (str_contains($mimeType, 'spreadsheetml.sheet') || str_contains($mimeType, 'application/vnd.ms-excel')) {
                     // Extract text from XLSX/XLS
-                    $content = $this->extractTextFromSpreadsheet($binaryContent, $maxLength);
+                    $content = $this->extractTextFromSpreadsheet($binaryContent, $effectiveMaxLength);
                 } elseif (str_contains($mimeType, 'wordprocessingml.document') || str_contains($mimeType, 'application/msword')) {
                     // Extract text from DOCX/DOC
-                    $content = $this->extractTextFromWord($binaryContent, $maxLength);
+                    $content = $this->extractTextFromWord($binaryContent, $effectiveMaxLength);
                 } else {
                     // Try the old format=text approach for other Office formats
                     try {
@@ -831,8 +838,8 @@ class SharePointService
 
                 // Truncate if needed
                 $truncated = false;
-                if (strlen($content) > $maxLength) {
-                    $content = substr($content, 0, $maxLength);
+                if (strlen($content) > $effectiveMaxLength) {
+                    $content = substr($content, 0, $effectiveMaxLength);
                     $truncated = true;
                 }
 
@@ -843,7 +850,8 @@ class SharePointService
                     'content' => $content,
                     'contentLength' => strlen($content),
                     'truncated' => $truncated,
-                    'mimeType' => $mimeType
+                    'mimeType' => $mimeType,
+                    'fullMode' => $full
                 ];
             } catch (\Exception $e) {
                 error_log('Document extraction failed: ' . $e->getMessage());
