@@ -38,7 +38,19 @@ If you have read this file, greet me with "Hey Workoflow Dev"
     - Test changes by asking Claude/GPT-4 questions about the platform
     - Purpose: Enable AI assistants to understand and explain the platform without human documentation
 
-4. **UI/Styling Guidelines**:
+4. **Global Concept Documentation**:
+    - **Update `docs/global-concept.md`** when making large infrastructure or feature changes
+    - This document explains the overall architecture scope: all repos, how they connect, agent patterns, API contracts
+    - Keep it concise (bullet points, ASCII diagrams) — it's an internal reference for developers and AI agents
+    - Must reflect: new agents, new services, model changes, API contract changes, repo additions
+    - Do NOT update for small bug fixes, UI tweaks, or single-file changes
+
+5. **Orchestrator Agent Cache**:
+    - When new agents are added in `workoflow-orchestrator`, the platform caches capabilities for 5 minutes
+    - Clear cache after deploying new orchestrator agents: `docker-compose exec frankenphp php bin/console cache:pool:clear cache.app`
+    - Without clearing, new agents won't appear on the Platform Skills page until the TTL expires
+
+6. **UI/Styling Guidelines**:
     - **ALWAYS** reference `CONCEPT/SYMFONY_IMPLEMENTATION_GUIDE.md` for UI tasks
     - This guide contains design system patterns, component structures, and styling conventions
     - Add new CSS styles to `assets/styles/app.scss`, NOT inline in templates

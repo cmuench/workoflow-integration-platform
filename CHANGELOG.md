@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## 2026-03-11
 
 ### Added
+- **Global concept documentation** — Architecture overview document covering all repos, agent patterns, and API contracts (`docs/global-concept.md`)
 - **Common orchestrator integration** — New tenant type "Common" connects to the Workoflow Orchestrator for AI agent processing, replacing the n8n workflow engine
 - **Dynamic agent discovery** — Platform agents (like People Finder) are fetched automatically from the orchestrator and can be enabled/disabled per organisation
 - **Orchestrator API URL configuration** — Admins can configure the orchestrator endpoint in tenant settings
