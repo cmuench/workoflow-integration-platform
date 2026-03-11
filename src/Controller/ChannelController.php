@@ -87,6 +87,10 @@ class ChannelController extends AbstractController
             $organisation->setWebhookUrl($data['webhook_url']);
         }
 
+        if (isset($data['orchestrator_api_url'])) {
+            $organisation->setOrchestratorApiUrl($data['orchestrator_api_url'] ?: null);
+        }
+
         if (isset($data['webhook_auth_header']) && !empty($data['webhook_auth_header'])) {
             $encrypted = $this->encryptionService->encrypt($data['webhook_auth_header']);
             $organisation->setEncryptedWebhookAuthHeader($encrypted);

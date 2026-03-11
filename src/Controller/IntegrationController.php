@@ -11,6 +11,7 @@ use App\Service\AuditLogService;
 use App\Service\ConnectionStatusService;
 use App\Service\EncryptionService;
 use App\Service\Integration\RemoteMcpService;
+use App\Service\OrchestratorCapabilitiesService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -866,24 +867,91 @@ class IntegrationController extends AbstractController
     }
 
     #[Route('/skills/platform-skills/edit', name: 'app_platform_skills_edit', methods: ['GET'])]
-    public function editPlatformSkills(): Response
+    public function editPlatformSkills(Request $request, OrchestratorCapabilitiesService $capabilitiesService): Response
     {
         /** @var User $user */
         $user = $this->getUser();
-        $organisation = $user->getOrganisation();
+        $sessionOrgId = $request->getSession()->get('current_organisation_id');
+        $organisation = $user->getCurrentOrganisation($sessionOrgId);
 
         if (!$organisation) {
             $this->addFlash('error', 'You must be part of an organisation to manage platform skills');
             return $this->redirectToRoute('app_skills');
         }
 
+        $isCommon = $organisation->getWebhookType() === 'COMMON';
+
+        if ($isCommon) {
+            return $this->editPlatformSkillsCommon($user, $organisation, $capabilitiesService);
+        }
+
+        return $this->editPlatformSkillsLegacy($user, $organisation);
+    }
+
+    /**
+     * Platform skills for common (ADK) orchestrator — agents fetched dynamically.
+     */
+    private function editPlatformSkillsCommon(
+        User $user,
+        \App\Entity\Organisation $organisation,
+        OrchestratorCapabilitiesService $capabilitiesService,
+    ): Response {
+        // Fetch available agents from orchestrator
+        $agents = $capabilitiesService->fetchCapabilities($organisation);
+
+        // Get or create a single IntegrationConfig for orchestrator agents
+        $config = $this->integrationConfigRepository->findOneBy([
+            'organisation' => $organisation,
+            'user' => $user,
+            'integrationType' => 'orchestrator',
+        ]);
+
+        if (!$config) {
+            $config = new IntegrationConfig();
+            $config->setOrganisation($organisation);
+            $config->setUser($user);
+            $config->setIntegrationType('orchestrator');
+            $config->setName('Orchestrator Agents');
+            $this->entityManager->persist($config);
+            $this->entityManager->flush();
+        }
+
+        $disabledAgents = $config->getDisabledTools();
+
+        // Build display data — one row per agent
+        $platformSkills = [];
+        foreach ($agents as $agent) {
+            $agentType = $agent['type'] ?? '';
+            $platformSkills[] = [
+                'type' => 'orchestrator',
+                'name' => $agent['name'] ?? $agentType,
+                'description' => $agent['description'] ?? '',
+                'agentType' => $agentType,
+                'instanceId' => $config->getId(),
+                'enabled' => !in_array($agentType, $disabledAgents, true),
+                'tools' => $agent['tools'] ?? [],
+            ];
+        }
+
+        return $this->render('integration/platform_skills_edit.html.twig', [
+            'platformSkills' => $platformSkills,
+            'organisation' => $organisation,
+            'isCommonOrchestrator' => true,
+        ]);
+    }
+
+    /**
+     * Platform skills for legacy (n8n) orchestrator — static from IntegrationRegistry.
+     */
+    private function editPlatformSkillsLegacy(User $user, \App\Entity\Organisation $organisation): Response
+    {
         // Get all system integrations
         $systemIntegrations = $this->integrationRegistry->getSystemIntegrations();
 
         // Get existing configs for system integrations (per user)
         $integrationConfigs = $this->integrationConfigRepository->findBy([
             'organisation' => $organisation,
-            'user' => $user // System integrations are user-specific
+            'user' => $user
         ], ['integrationType' => 'ASC']);
 
         // Build config map by integration type
@@ -918,7 +986,8 @@ class IntegrationController extends AbstractController
 
         return $this->render('integration/platform_skills_edit.html.twig', [
             'platformSkills' => $platformSkills,
-            'organisation' => $organisation
+            'organisation' => $organisation,
+            'isCommonOrchestrator' => false,
         ]);
     }
 

@@ -258,7 +258,7 @@
                             <input type="text"
                                    class="form-control"
                                    id="tenant_type"
-                                   value="{{ organisation.tenantType == 'ms_teams' ? 'MS Teams' : (organisation.tenantType == 'web' ? 'Web' : '') }}"
+                                   value="{{ organisation.tenantType == 'ms_teams' ? 'MS Teams' : (organisation.tenantType == 'web' ? 'Web' : (organisation.tenantType == 'common' ? 'Common (ADK)' : '')) }}"
                                    readonly>
                         </div>
 
@@ -340,7 +340,19 @@
                                    value="{{ organisation.webhookUrl ?? '' }}"
                                    placeholder="http://localhost:5678/webhook/016d8b95-..."
                                    {% if not app.user.isAdmin() %}readonly{% endif %}>
-                            <small class="form-text text-muted">This is the webhook receiving the user's prompt/payload. Feel free to use your own API endpoint and build your own customizations.</small>
+                            <small class="form-text text-muted">This is the webhook receiving the user's prompt/payload. Used by the bot and external clients.</small>
+                        </div>
+
+                        <div class="form-group" id="orchestrator-api-url-group" style="{% if organisation.webhookType != 'COMMON' %}display: none;{% endif %}">
+                            <label for="orchestrator_api_url" class="form-label">Orchestrator API URL (Internal)</label>
+                            <input type="url"
+                                   class="form-control"
+                                   id="orchestrator_api_url"
+                                   name="orchestrator_api_url"
+                                   value="{{ organisation.orchestratorApiUrl ?? '' }}"
+                                   placeholder="http://host.docker.internal:8080"
+                                   {% if not app.user.isAdmin() %}readonly{% endif %}>
+                            <small class="form-text text-muted">Internal URL used by this platform to reach the orchestrator API (e.g. for fetching capabilities). Use <code>host.docker.internal</code> when the platform runs in Docker and the orchestrator on the host.</small>
                         </div>
 
                         <div class="form-group">

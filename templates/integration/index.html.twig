@@ -331,7 +331,8 @@ http_headers = { "X-Prompt-Token" = "{{ userOrganisation.personalAccessToken }}"
 
             {# Platform Skills Card Component #}
             {{ component('platform_skills_card', {
-                integrations: integrations
+                integrations: integrations,
+                webhookType: organisation.webhookType|default(null)
             }) }}
         {% endif %}
     </div>

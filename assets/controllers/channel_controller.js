@@ -29,6 +29,12 @@ export default class extends Controller {
     onWebhookTypeChange(event) {
         const webhookType = event.target.value;
 
+        // Orchestrator API URL field (Common only)
+        const orchestratorGroup = document.getElementById('orchestrator-api-url-group');
+        if (orchestratorGroup) {
+            orchestratorGroup.style.display = webhookType === 'COMMON' ? 'block' : 'none';
+        }
+
         if (webhookType === 'N8N') {
             this.showWorkflowVisualization();
             // Show N8N API key field and workflow URL field

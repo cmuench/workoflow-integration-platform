@@ -3882,6 +3882,24 @@ body {
       font-size: var(--text-base);
     }
   }
+
+  .orchestrator-info-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-lg);
+    background: rgba(59, 130, 246, 0.08);
+    border-left: 3px solid #3b82f6;
+    color: #93bbfc;
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-lg);
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+
+    i {
+      flex-shrink: 0;
+      color: #3b82f6;
+    }
+  }
 }
 
 // Header with actions (search + add button)

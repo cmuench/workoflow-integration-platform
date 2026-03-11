@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 2026-03-11
+
+### Added
+- **Common orchestrator integration** — New tenant type "Common" connects to the Workoflow Orchestrator for AI agent processing, replacing the n8n workflow engine
+- **Dynamic agent discovery** — Platform agents (like People Finder) are fetched automatically from the orchestrator and can be enabled/disabled per organisation
+- **Orchestrator API URL configuration** — Admins can configure the orchestrator endpoint in tenant settings
+- **Scheduled task support for Common tenants** — Scheduled tasks now work with the new orchestrator via dedicated payload builder and response renderer
+
+### Changed
+- **Orchestrator capabilities are cached** — Agent discovery results are cached for 5 minutes to reduce API load, with automatic cache invalidation
+- **Response validation** — Orchestrator capability responses are now validated before processing to prevent errors from malformed data
+
 ## 2026-03-06
 
 ### Added
