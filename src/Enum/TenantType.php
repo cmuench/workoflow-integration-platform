@@ -6,12 +6,14 @@ enum TenantType: string
 {
     case MS_TEAMS = 'ms_teams';
     case WEB = 'web';
+    case COMMON = 'common';
 
     public function label(): string
     {
         return match ($this) {
             self::MS_TEAMS => 'MS Teams',
             self::WEB => 'Web',
+            self::COMMON => 'Common (ADK)',
         };
     }
 

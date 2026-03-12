@@ -4,6 +4,44 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 2026-03-12
+
+### Fixed
+- **Webhook auth header placeholder corrected** — The tenant settings page now shows the correct format hint (`Basic <credentials>` or `Bearer <token>`) instead of the misleading `Authorization: Bearer your-token`, which caused a double "Authorization:" prefix when entered as-is
+- **Auth format guidance for different orchestrators** — Added helper text explaining which auth format to use: Basic for N8N webhooks, Bearer for Common (ADK)
+
+## 2026-03-11
+
+### Added
+- **Global concept documentation** — Architecture overview document covering all repos, agent patterns, and API contracts (`docs/global-concept.md`)
+- **Common orchestrator integration** — New tenant type "Common" connects to the Workoflow Orchestrator for AI agent processing, replacing the n8n workflow engine
+- **Dynamic agent discovery** — Platform agents (like People Finder) are fetched automatically from the orchestrator and can be enabled/disabled per organisation
+- **Orchestrator API URL configuration** — Admins can configure the orchestrator endpoint in tenant settings
+- **Scheduled task support for Common tenants** — Scheduled tasks now work with the new orchestrator via dedicated payload builder and response renderer
+
+### Changed
+- **Orchestrator capabilities are cached** — Agent discovery results are cached for 5 minutes to reduce API load, with automatic cache invalidation
+- **Response validation** — Orchestrator capability responses are now validated before processing to prevent errors from malformed data
+
+## 2026-03-06
+
+### Added
+- **Full document reading for SharePoint** — Read entire contracts and documents without character truncation using the new `full` mode. Supports documents up to 25 MB and 500,000 characters, ideal for analyzing complete contracts, policies, and reports
+- **SharePoint site discovery restored** — AI agents can now discover available SharePoint sites and their IDs, enabling folder browsing and list access
+
+### Fixed
+- **SharePoint folder browsing now works** — AI agents can list files and folders in SharePoint directories without errors
+- **SharePoint tools accept site names** — Passing a site display name (e.g. "Marketing") is now auto-resolved to the correct ID, preventing "Invalid hostname" errors
+- **All SharePoint tools enabled by default** — New and existing SharePoint setups now have all tools enabled, so agents can browse files and lists immediately
+
+### Removed
+- **SharePoint file download tool removed** — The download tool only returned URLs that AI agents couldn't use; use the document reader instead
+
+## 2026-03-04
+
+### Changed
+- **Claude Desktop setup simplified** — The Claude Desktop connection guide now recommends installing the Workoflow extension instead of manually editing JSON config files. Valantic team users can find it in the marketplace; others can download and drag-install it with one click. Manual configuration is still available under "Advanced"
+
 ## 2026-02-27
 
 ### Fixed

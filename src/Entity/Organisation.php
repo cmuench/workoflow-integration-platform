@@ -54,6 +54,15 @@ class Organisation
     #[ORM\Column(length: 500, nullable: true)]
     private ?string $webhookUrl = null;
 
+    /**
+     * Internal URL used by the platform (inside Docker) to reach the orchestrator API.
+     * For local dev: http://host.docker.internal:8080
+     * For production: http://orchestrator:8080 (Docker service name)
+     * The webhookUrl is used by external clients (bot), this URL is used by the platform.
+     */
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $orchestratorApiUrl = null;
+
     #[ORM\Column(length: 500, nullable: true)]
     private ?string $workflowUrl = null;
 
@@ -264,6 +273,17 @@ class Organisation
     public function setWebhookUrl(?string $webhookUrl): static
     {
         $this->webhookUrl = $webhookUrl;
+        return $this;
+    }
+
+    public function getOrchestratorApiUrl(): ?string
+    {
+        return $this->orchestratorApiUrl;
+    }
+
+    public function setOrchestratorApiUrl(?string $orchestratorApiUrl): static
+    {
+        $this->orchestratorApiUrl = $orchestratorApiUrl;
         return $this;
     }
 

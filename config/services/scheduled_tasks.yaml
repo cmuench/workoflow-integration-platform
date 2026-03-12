@@ -10,6 +10,9 @@ services:
     App\Service\ScheduledTask\WebPayloadBuilder:
         tags: ['app.webhook_payload_builder']
 
+    App\Service\ScheduledTask\CommonPayloadBuilder:
+        tags: ['app.webhook_payload_builder']
+
     # Executor with tagged payload builders
     App\Service\ScheduledTask\ScheduledTaskExecutor:
         arguments:
@@ -20,6 +23,9 @@ services:
         tags: ['app.response_renderer']
 
     App\Service\ScheduledTask\WebResponseRenderer:
+        tags: ['app.response_renderer']
+
+    App\Service\ScheduledTask\CommonResponseRenderer:
         tags: ['app.response_renderer']
 
     # Response renderer registry
