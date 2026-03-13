@@ -118,10 +118,6 @@
                             <span>{{ 'nav.scheduled_tasks'|trans }}</span>
                         </a>
                         {% if app.user.isAdmin() %}
-                            <a href="{{ path('app_files') }}" class="dropdown-item">
-                                <i class="fas fa-folder" aria-hidden="true"></i>
-                                <span>{{ 'nav.files'|trans }}</span>
-                            </a>
                             <a href="{{ path('app_tenant') }}" class="dropdown-item">
                                 <i class="fas fa-comments" aria-hidden="true"></i>
                                 <span>{{ 'nav.channel'|trans }}</span>

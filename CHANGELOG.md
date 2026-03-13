@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Workoflow Orchestrator added to footer** — Open Source section in the footer now links to the Orchestrator GitHub repository
 - **Claude Code CLI setup command** — Added a recommended one-line `claude mcp add` command as an alternative to manually editing the JSON config file
 
+### Changed
+- **Files page hidden from navigation** — The Files link is no longer shown in the Workspace menu
+
 ### Fixed
 - **Execution history now shows only your own tasks** — Previously, the Scheduled Tasks page displayed execution history from all users in the organisation; now it only shows executions for tasks you created
 - **Execution details restricted to task owner** — Viewing output, status, and deleting executions is now limited to the user who owns the task
