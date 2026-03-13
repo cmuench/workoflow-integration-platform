@@ -620,6 +620,7 @@ footer:
     pptx: PPTX
     rag: RAG
     metrics: Metriken
+    orchestrator: Orchestrator
 
 validation:
   name_required: Name ist erforderlich
@@ -697,6 +698,9 @@ release_notes:
     metrics:
       name: Workoflow Metriken
       description: Grafana-basierte Monitoring-Dashboards für die Workoflow-Plattform. Enthält Executive Summary, LLM-Kosten- und Nutzungsverfolgung, Workflow-Ausführungen, Benutzeraktivität und Tool-Nutzungsanalysen.
+    orchestrator:
+      name: Workoflow Orchestrator
+      description: KI-Agenten-Orchestrierungs-Framework zur Koordination mehrstufiger Workflows über Workoflow-Tools. Verwaltet Agenten-Fähigkeiten, Tool-Routing und Ausführungs-Pipelines für intelligente Automatisierung.
 
 prompt:
   vault_title: Prompt Vault
