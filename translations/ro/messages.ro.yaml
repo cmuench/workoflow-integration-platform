@@ -619,6 +619,7 @@ footer:
     pptx: PPTX
     rag: RAG
     metrics: Metrici
+    orchestrator: Orchestrator
 
 validation:
   name_required: Numele este obligatoriu
@@ -696,6 +697,9 @@ release_notes:
     metrics:
       name: Workoflow Metrici
       description: Tablouri de bord de monitorizare bazate pe Grafana pentru platforma Workoflow. Include rezumat executiv, urmărirea costurilor și utilizării LLM, execuții de fluxuri de lucru, activitatea utilizatorilor și analize de utilizare a instrumentelor.
+    orchestrator:
+      name: Workoflow Orchestrator
+      description: Framework de orchestrare a agenților AI care coordonează fluxuri de lucru multi-pas prin instrumentele Workoflow. Gestionează capabilitățile agenților, rutarea instrumentelor și pipeline-urile de execuție pentru automatizare inteligentă.
 
 prompt:
   vault_title: Prompt Vault

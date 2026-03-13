@@ -619,6 +619,7 @@ footer:
     pptx: PPTX
     rag: RAG
     metrics: Metrika
+    orchestrator: Orkestravimas
 
 validation:
   name_required: Pavadinimas privalomas
@@ -696,6 +697,9 @@ release_notes:
     metrics:
       name: Workoflow metrika
       description: Grafana pagrįstos stebėjimo informacinės lentos Workoflow platformai. Apima vadovų suvestinę, LLM kaštų ir naudojimo sekimą, darbo eigų vykdymus, vartotojų veiklą ir įrankių naudojimo analizę.
+    orchestrator:
+      name: Workoflow orkestravimas
+      description: AI agentų orkestravimo karkasas, koordinuojantis daugiažingsnius darbo eigų procesus per Workoflow įrankius. Valdo agentų galimybes, įrankių nukreipimą ir vykdymo konvejerius protingai automatizacijai.
 
 prompt:
   vault_title: Prompt Vault
