@@ -9,10 +9,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - **Workoflow Orchestrator added to Release Notes** — The Release Notes page now includes a dedicated tab for the Workoflow Orchestrator changelog
 - **Workoflow Orchestrator added to footer** — Open Source section in the footer now links to the Orchestrator GitHub repository
+- **Claude Code CLI setup command** — Added a recommended one-line `claude mcp add` command as an alternative to manually editing the JSON config file
 
 ### Fixed
 - **Execution history now shows only your own tasks** — Previously, the Scheduled Tasks page displayed execution history from all users in the organisation; now it only shows executions for tasks you created
 - **Execution details restricted to task owner** — Viewing output, status, and deleting executions is now limited to the user who owns the task
+- **Claude Code MCP config path corrected** — The MCP Server Configuration page now shows the correct config file path (`~/.claude.json`) instead of `~/.claude/settings.json`, which silently ignored MCP settings
+- **Windsurf MCP config path corrected** — Updated the Windsurf config path from `~/.codeium/windsurf/mcp_config.json` to `~/.codeium/mcp_config.json`
 
 ## 2026-03-12
 
