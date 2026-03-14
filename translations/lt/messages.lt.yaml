@@ -258,6 +258,7 @@ integration:
   platform_skills_info: Integruoti įrankiai, teikiantys esmines galimybes jūsų AI agentams. Valdykite, kokie įrankiai prieinami jūsų organizacijai.
   platform_skills_edit: Valdyti platformos įgūdžius
   platform_skills_edit_description: Įjunkite arba išjunkite platformos įrankius, prieinamus visiems jūsų organizacijos vartotojams
+  common_orchestrator_info: Ši organizacija naudoja ADK orchestratorių. Darbuotojų įrankiai (pvz., People Finder) valdomi tiesiogiai orchestratoriaus ir nereikalauja atskiros platformos konfigūracijos.
   external_integrations: Personalizuoti įgūdžiai
   external_integrations_description: Prisijunkite prie išorinių paslaugų kaip Jira, Confluence ir SharePoint su savo prisijungimo duomenimis
   available_tools: Prieinami įrankiai

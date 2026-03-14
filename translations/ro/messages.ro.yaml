@@ -258,6 +258,7 @@ integration:
   platform_skills_info: Instrumente integrate care oferă capabilități esențiale pentru agenții dvs. AI. Gestionați ce instrumente sunt disponibile pentru organizația dvs.
   platform_skills_edit: Gestionați abilitățile platformei
   platform_skills_edit_description: Activați sau dezactivați instrumentele platformei disponibile pentru toți utilizatorii din organizația dvs.
+  common_orchestrator_info: Această organizație folosește orchestratorul ADK. Instrumentele pentru angajați (cum ar fi People Finder) sunt gestionate nativ de orchestrator și nu necesită configurare separată a platformei.
   external_integrations: Abilități personalizate
   external_integrations_description: Conectați-vă la servicii externe precum Jira, Confluence și SharePoint cu acreditările dvs.
   available_tools: Instrumente disponibile
