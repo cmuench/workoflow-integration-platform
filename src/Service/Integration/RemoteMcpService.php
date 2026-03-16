@@ -2,6 +2,7 @@
 
 namespace App\Service\Integration;
 
+use App\Service\UrlNormalizer;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -20,6 +21,7 @@ class RemoteMcpService
         private readonly HttpClientInterface $httpClient,
         private readonly CacheInterface $cache,
         private readonly LoggerInterface $logger,
+        private readonly UrlNormalizer $urlNormalizer,
     ) {
     }
 
@@ -453,11 +455,7 @@ class RemoteMcpService
             throw new \InvalidArgumentException('MCP server URL is required');
         }
 
-        if (!str_starts_with($url, 'https://')) {
-            throw new \InvalidArgumentException('MCP server URL must use HTTPS');
-        }
-
-        return rtrim($url, '/');
+        return $this->urlNormalizer->normalize($url, requireHttps: true);
     }
 
     /**

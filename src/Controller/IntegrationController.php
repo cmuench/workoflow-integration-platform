@@ -351,9 +351,8 @@ class IntegrationController extends AbstractController
                 } else {
                     // For non-sensitive fields, always update
                     if ($value !== null) {
-                        // Normalize URLs
-                        if ($field->getName() === 'url' && !empty($value)) {
-                            // Remove trailing slash
+                        // Normalize URL fields (strip trailing slashes)
+                        if ($field->getType() === 'url' && !empty($value)) {
                             $value = rtrim($value, '/');
                         }
                         $credentials[$field->getName()] = $value;

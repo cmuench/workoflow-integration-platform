@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 2026-03-16
+
+### Fixed
+- **Integration URLs with trailing slashes no longer cause connection failures** — Entering a URL like `https://example.atlassian.net/` instead of `https://example.atlassian.net` now works correctly for all integrations (Jira, Confluence, GitLab, SAP C4C, Projektron, Remote MCP, SAP SAC, SharePoint)
+
 ## 2026-03-14
 
 ### Changed

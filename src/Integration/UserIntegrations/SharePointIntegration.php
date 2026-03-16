@@ -247,7 +247,7 @@ Tips: Use OR to include synonyms and translations (German+English) for bilingual
         return [
             new CredentialField(
                 'sharepoint_url',
-                'text',
+                'url',
                 'SharePoint URL',
                 'valanticmore.sharepoint.com',
                 true,
