@@ -81,7 +81,15 @@ class ScheduledTaskExecutor
                 throw new \RuntimeException('Task has no organisation or user');
             }
 
-            $webhookUrl = $org->getOrchestratorApiUrl() ?: $org->getWebhookUrl();
+            // Prefer the internal orchestrator URL (platform-side, inside Docker).
+            // orchestratorApiUrl is a base URL — append /webhook for the message endpoint.
+            // webhookUrl is a full URL (already includes path) used by external clients.
+            $orchestratorApiUrl = $org->getOrchestratorApiUrl();
+            if (!empty($orchestratorApiUrl)) {
+                $webhookUrl = rtrim($orchestratorApiUrl, '/') . '/webhook';
+            } else {
+                $webhookUrl = $org->getWebhookUrl();
+            }
             if (empty($webhookUrl)) {
                 throw new \RuntimeException('Organisation has no orchestrator API URL or webhook URL configured');
             }
