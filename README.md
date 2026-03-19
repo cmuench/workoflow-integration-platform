@@ -83,7 +83,7 @@ Key differentiators:
 ```bash
 # 1. Clone repository
 git clone <repository-url>
-cd workoflow-promopage-v2
+cd workoflow-integration-platform
 
 # 2. Run setup script
 ./setup.sh dev

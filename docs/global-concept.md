@@ -14,42 +14,42 @@ This document describes the COMMON tenant architecture.
 
 | Repo | Role | Tech |
 |------|------|------|
-| `workoflow-promopage-v2` | Integration Platform — source of truth for integrations, tools, credentials, prompts | Symfony 8 / FrankenPHP |
+| `workoflow-integration-platform` | Integration Platform — source of truth for integrations, tools, credentials, prompts | Symfony 8 / FrankenPHP |
 | `workoflow-orchestrator` | AI Agent Orchestrator — Google ADK, multi-agent coordination | Python / FastAPI / Google ADK |
 | `workoflow-bot` | MS Teams channel client | Node.js / Bot Framework SDK v4 |
 | `workoflow-mcp` | MCP server for Claude Desktop / external MCP clients | Node.js |
-| `workoflow-ai-setup` | Infrastructure — Docker Compose for all shared services | Docker Compose |
+| `workoflow-hosting` | Infrastructure — Docker Compose for all shared services | Docker Compose |
 | `workoflow-metrics` | Grafana dashboards for usage, feedback, time saved | Grafana |
 
 ## System Components
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           WORKOFLOW PLATFORM                               │
-│                                                                             │
-│  ┌──────────────┐   ┌──────────────────┐   ┌───────────────────────────┐   │
-│  │  Channel      │   │  AI Agent        │   │  Integration Platform     │   │
-│  │  Clients      │──▶│  Orchestrator    │──▶│  (workoflow-promopage-v2) │   │
-│  │              │   │  (Google ADK)    │   │                           │   │
-│  │  • Teams Bot  │   │                  │   │  • Tool Definitions       │   │
-│  │  • Slack      │   │  Main Agent      │   │  • System Prompts         │   │
-│  │  • WhatsApp   │   │   ├─▶ Sub-Agents │   │  • Tool Execution         │   │
-│  │  • MCP Client │   │   └─▶ Native Agt │   │  • Credential Management  │   │
-│  └──────────────┘   └──────────────────┘   └───────────────────────────┘   │
-│                              │                          │                   │
-│                     ┌────────▼────────┐        ┌────────▼────────┐         │
-│                     │  Infrastructure  │        │ External Services│         │
-│                     │  (ai-setup)      │        │ (Jira, GitLab…) │         │
-│                     │                  │        └─────────────────┘         │
-│                     │  • LiteLLM Proxy │                                    │
-│                     │  • Phoenix       │                                    │
-│                     │  • Qdrant        │                                    │
-│                     │  • Redis/PG      │                                    │
-│                     └─────────────────┘                                     │
-└─────────────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────────────┐
+│                              WORKOFLOW PLATFORM                                   │
+│                                                                                   │
+│  ┌────────────────┐   ┌────────────────────┐   ┌──────────────────────────────┐  │
+│  │ Channel         │   │ AI Agent            │   │ Integration Platform          │  │
+│  │ Clients         │──▶│ Orchestrator        │──▶│ (workoflow-integration-plat.) │  │
+│  │                 │   │ (Google ADK)        │   │                              │  │
+│  │ • Teams Bot     │   │                     │   │ • Tool Definitions           │  │
+│  │ • Slack         │   │ Main Agent          │   │ • System Prompts             │  │
+│  │ • WhatsApp      │   │  ├─▶ Sub-Agents     │   │ • Tool Execution             │  │
+│  │ • MCP Client    │   │  └─▶ Native Agents  │   │ • Credential Management      │  │
+│  └────────────────┘   └────────────────────┘   └──────────────────────────────┘  │
+│                               │                             │                     │
+│                      ┌────────▼─────────┐          ┌────────▼─────────┐          │
+│                      │ Infrastructure    │          │ External Services │          │
+│                      │ (hosting)         │          │ (Jira, GitLab…)  │          │
+│                      │                   │          └──────────────────┘          │
+│                      │ • LiteLLM Proxy   │                                        │
+│                      │ • Phoenix         │                                        │
+│                      │ • Qdrant          │                                        │
+│                      │ • Redis/PG        │                                        │
+│                      └───────────────────┘                                        │
+└───────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 1. Integration Platform (`workoflow-promopage-v2`)
+### 1. Integration Platform (`workoflow-integration-platform`)
 
 - Symfony 8.0 / FrankenPHP
 - Source of truth for integrations, tools, credentials, system prompts
@@ -80,7 +80,7 @@ This document describes the COMMON tenant architecture.
 - Thread-based conversation tracking with Redis session mapping
 - Displays AI responses with attachments and feedback collection
 
-### 4. Infrastructure (`workoflow-ai-setup`)
+### 4. Infrastructure (`workoflow-hosting`)
 
 - LiteLLM Proxy — model routing (GPT-5.4 via OpenAI, GPT-4.1 via Azure+OpenAI, text-embedding-3-large), failover, Redis caching
 - Phoenix — OpenTelemetry observability for LLM calls
@@ -421,7 +421,7 @@ Payload: { name, org_uuid, workflow_user_id, email, channel_info }
 Response: { magic_link, user_id, email, organisation }
 ```
 
-## Infrastructure (`workoflow-ai-setup`)
+## Infrastructure (`workoflow-hosting`)
 
 ### Docker Compose Services
 

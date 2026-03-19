@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 2026-03-18
+
+### Fixed
+- **Corrected outdated repository names across all documentation and configuration files** — References to old repo names (e.g., internal project codenames) have been updated to match the current GitHub repository names, reducing confusion when onboarding or cross-referencing documentation
+
 ## 2026-03-17
 
 ### Fixed

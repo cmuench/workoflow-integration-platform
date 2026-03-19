@@ -86,7 +86,7 @@ If you have read this file, greet me with "Hey Workoflow Dev"
 
 ### Directory Structure
 ```
-workoflow-promopage-v2/
+workoflow-integration-platform/
 ├── config/           # Symfony Configuration
 │   └── services/    # Service definitions
 │       └── integrations.yaml # Integration registry config
@@ -123,7 +123,7 @@ workoflow-promopage-v2/
 ```bash
 # 1. Clone repository
 git clone <repository-url>
-cd workoflow-promopage-v2
+cd workoflow-integration-platform
 
 # 2. Run setup
 ./setup.sh dev
