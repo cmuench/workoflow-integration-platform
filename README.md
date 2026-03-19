@@ -49,24 +49,24 @@ Key differentiators:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        AI Agents / Bots                          │
-│                  (MS Teams, WhatsApp, Slack, etc.)               │
+│                        AI Agents / Bots                         │
+│                  (MS Teams, WhatsApp, Slack, etc.)              │
 └─────────────────────────────┬───────────────────────────────────┘
                               │ REST API (Basic Auth / JWT)
 ┌─────────────────────────────▼───────────────────────────────────┐
-│                   Workoflow Integration Platform                 │
+│                   Workoflow Integration Platform                │
 ├─────────────────────────────────────────────────────────────────┤
 │  IntegrationRegistry ──► Tool Discovery & Execution             │
 │  EncryptionService   ──► Credential Management (Sodium)         │
 │  AuditLogService     ──► Activity Logging                       │
 ├─────────────────────────────────────────────────────────────────┤
-│  User Integrations          │  System Tools                      │
-│  ├── Jira                   │  ├── File Sharing                  │
-│  ├── Confluence             │  ├── PDF Generator                 │
-│  ├── SharePoint             │  ├── Web Search                    │
-│  ├── GitLab                 │  ├── Knowledge Query               │
-│  ├── Trello                 │  └── ...                           │
-│  └── ...                    │                                    │
+│  User Integrations          │  System Tools                     │
+│  ├── Jira                   │  ├── File Sharing                 │
+│  ├── Confluence             │  ├── PDF Generator                │
+│  ├── SharePoint             │  ├── Web Search                   │
+│  ├── GitLab                 │  ├── Knowledge Query              │
+│  ├── Trello                 │  └── ...                          │
+│  └── ...                    │                                   │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -320,5 +320,5 @@ Proprietary - All rights reserved.
 ---
 
 <p align="center">
-  Built with Symfony 7.2 and FrankenPHP
+  Built with Symfony 8 and FrankenPHP
 </p>
