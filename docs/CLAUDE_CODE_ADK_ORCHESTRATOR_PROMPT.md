@@ -49,7 +49,7 @@ Spawn **three collaborating AI agents** (minimum). They should communicate throu
 - **Role**: Conceptual oversight, architecture validation, quality gate
 - **Spawn as**: Research/planning agent (no code writing, reads docs and produces architecture plan)
 - **Responsibilities**:
-  - Reads ALL reference codebases and docs first (workoflow-promopage-v2, workoflow-hosting, workoflow-bot, workoflow-tests)
+  - Reads ALL reference codebases and docs first (workoflow-integration-platform, workoflow-hosting, workoflow-bot, workoflow-tests)
   - Produces a concrete architecture document with module design, data flow, and interface contracts
   - Reviews every design decision against SOLID principles and production readiness
   - Validates that the new orchestrator is **observable, correct, and produces valid answers**
@@ -119,11 +119,11 @@ Before writing any code, agents must research:
    - https://developers.googleblog.com/developers-guide-to-multi-agent-patterns-in-adk/
 
 3. **Existing Codebase** — Read these files:
-   - `/home/patrickjaja/development/workoflow-promopage-v2/docs/global-concept.md` — Full system architecture
-   - `/home/patrickjaja/development/workoflow-promopage-v2/templates/skills/prompts/` — All system prompts (main_agent.twig + sub-agent XML templates)
-   - `/home/patrickjaja/development/workoflow-promopage-v2/src/Integration/` — All 27 integrations
-   - `/home/patrickjaja/development/workoflow-promopage-v2/src/Controller/TenantApiController.php` — Tenant settings API
-   - `/home/patrickjaja/development/workoflow-promopage-v2/src/Controller/IntegrationApiController.php` — Tool discovery & execution API
+   - `/workoflow-integration-platform/docs/global-concept.md` — Full system architecture
+   - `/workoflow-integration-platform/templates/skills/prompts/` — All system prompts (main_agent.twig + sub-agent XML templates)
+   - `/workoflow-integration-platform/src/Integration/` — All 27 integrations
+   - `/workoflow-integration-platform/src/Controller/TenantApiController.php` — Tenant settings API
+   - `/workoflow-integration-platform/src/Controller/IntegrationApiController.php` — Tool discovery & execution API
 
 4. **workoflow-hosting** — Clone and read:
    - `https://github.com/valantic-CEC-Deutschland-GmbH/workoflow-hosting`
@@ -567,7 +567,7 @@ The workoflow-bot needs these changes:
 
 ### Research Task for Frontend Dev
 The Frontend Dev agent must research the exact Bot Framework streaming API by reading:
-- The workoflow-bot repo (`/home/patrickjaja/development/workoflow-bot/`)
+- The workoflow-bot repo (`/workoflow-bot/`)
 - Microsoft Bot Framework streaming docs (web search: "botbuilder-js streaming activities 2025 2026")
 - Verify the exact `channelData` fields needed for MS Teams streaming
 - Confirm no admin.teams.com changes are required
