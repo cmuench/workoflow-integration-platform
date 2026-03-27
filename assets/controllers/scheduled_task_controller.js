@@ -172,6 +172,8 @@ export default class extends Controller {
         const tbody = document.getElementById('executions-tbody');
         if (!tbody) return;
 
+        // Timestamp is already in browser-local time (unlike server-rendered UTC timestamps
+        // that get converted by convertTimestamps()). Both produce local time for the user.
         const now = new Date();
         const timestamp = now.getFullYear() + '-' +
             String(now.getMonth() + 1).padStart(2, '0') + '-' +
