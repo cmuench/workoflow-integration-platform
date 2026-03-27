@@ -5,6 +5,7 @@ export default class extends Controller {
 
     connect() {
         this.detectTimezone();
+        this.convertTimestamps();
         this.resumePendingPolling();
     }
 
@@ -26,6 +27,39 @@ export default class extends Controller {
             const tz = this.timezoneInputTarget.value || browserTz || 'UTC';
             this.timezoneLabelTarget.textContent = tz;
         }
+    }
+
+    /**
+     * Convert all UTC timestamps on the page to the user's local timezone
+     */
+    convertTimestamps() {
+        document.querySelectorAll('[data-utc-datetime]').forEach(el => {
+            const iso = el.dataset.utcDatetime;
+            if (!iso) return;
+
+            const date = new Date(iso);
+            if (isNaN(date.getTime())) return;
+
+            const includeSeconds = el.textContent.trim().split(':').length > 2;
+            el.textContent = this.formatLocalDateTime(date, includeSeconds);
+        });
+    }
+
+    /**
+     * Format a Date object as 'YYYY-MM-DD HH:MM(:SS)' in the browser's local timezone
+     */
+    formatLocalDateTime(date, includeSeconds = false) {
+        const pad = n => String(n).padStart(2, '0');
+        const y = date.getFullYear();
+        const m = pad(date.getMonth() + 1);
+        const d = pad(date.getDate());
+        const h = pad(date.getHours());
+        const min = pad(date.getMinutes());
+        if (includeSeconds) {
+            const s = pad(date.getSeconds());
+            return `${y}-${m}-${d} ${h}:${min}:${s}`;
+        }
+        return `${y}-${m}-${d} ${h}:${min}`;
     }
 
     /**
