@@ -271,7 +271,9 @@ class ScheduledTask
 
     public function computeNextExecutionAt(): void
     {
-        $now = new \DateTime();
+        $tz = new \DateTimeZone($this->timezone ?? 'UTC');
+        $utcTz = new \DateTimeZone('UTC');
+        $now = new \DateTime('now', $tz);
 
         switch ($this->frequency) {
             case 'manual':
@@ -279,7 +281,7 @@ class ScheduledTask
                 return;
 
             case 'hourly':
-                $next = new \DateTime();
+                $next = new \DateTime('now', $tz);
                 $next->modify('+1 hour');
                 if ($this->executionTime !== null) {
                     $minutes = (int) substr($this->executionTime, 3, 2);
@@ -293,6 +295,7 @@ class ScheduledTask
                         $next->modify('+1 hour');
                     }
                 }
+                $next->setTimezone($utcTz);
                 $this->nextExecutionAt = $next;
                 return;
 
@@ -301,6 +304,7 @@ class ScheduledTask
                 if ($next <= $now) {
                     $next->modify('+1 day');
                 }
+                $next->setTimezone($utcTz);
                 $this->nextExecutionAt = $next;
                 return;
 
@@ -313,6 +317,7 @@ class ScheduledTask
                 while ((int) $next->format('N') > 5) {
                     $next->modify('+1 day');
                 }
+                $next->setTimezone($utcTz);
                 $this->nextExecutionAt = $next;
                 return;
 
@@ -327,6 +332,7 @@ class ScheduledTask
                 if ($daysUntil > 0) {
                     $next->modify("+{$daysUntil} days");
                 }
+                $next->setTimezone($utcTz);
                 $this->nextExecutionAt = $next;
                 return;
         }
