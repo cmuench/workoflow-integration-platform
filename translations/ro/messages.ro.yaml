@@ -325,6 +325,13 @@ integration:
   instance_name: Nume instanță
   instance_name_hint: 'Un nume prietenos pentru a identifica această instanță de integrare (de ex. „Jira Producție", „SharePoint Dev")'
   instance_name_placeholder: de ex. Producție
+  instance_context: Contextul instanței
+  instance_context_hint: Context suplimentar pentru agenții AI pentru a diferenția această instanță, de ex. URL-ul workspace-ului, numele echipei sau mediul
+  instance_context_placeholder: 'de ex. valanticgroup.atlassian.net — Workspace Engineering'
+  connect: Conectare
+  quick_connect_name_description: Dați acestei conexiuni un nume unic pentru a o putea identifica ulterior, mai ales dacă conectați mai multe instanțe ale aceluiași server.
+  quick_connect_name_hint: 'de ex. „Atlassian Rovo — valantic" sau „Sentry — producție"'
+  continue_to_authorization: Continuă la autorizare
   workflow_user_id: ID utilizator Workflow
   workflow_user_id_hint: 'Opțional: Filtrați instrumentele pentru utilizatori specifici de workflow'
   workflow_user_id_placeholder: de ex. user-123

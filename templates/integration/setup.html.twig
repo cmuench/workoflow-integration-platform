@@ -65,7 +65,7 @@
                 <div class="form-group">
                     <label for="integration_config_instance_context">
                         {{ 'integration.instance_context'|trans|default('Instance Context') }}
-                        <span class="text-secondary">({{ 'form.optional'|trans|default('optional') }})</span>
+                        <span class="text-secondary">({{ 'common.optional'|trans }})</span>
                     </label>
                     <span class="field-hint">{{ 'integration.instance_context_hint'|trans|default('Additional context for AI agents to differentiate this instance, e.g., workspace URL, team name, or environment') }}</span>
                     {{ form_widget(form.instance_context, {'attr': {'class': 'form-control', 'rows': '2', 'placeholder': 'integration.instance_context_placeholder'|trans|default('e.g., valanticgroup.atlassian.net — Engineering workspace')}}) }}

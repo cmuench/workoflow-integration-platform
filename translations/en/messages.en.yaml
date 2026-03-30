@@ -326,6 +326,13 @@ integration:
   instance_name: Instance Name
   instance_name_hint: 'A friendly name to identify this integration instance (e.g., "Production Jira", "Dev SharePoint")'
   instance_name_placeholder: e.g., Production
+  instance_context: Instance Context
+  instance_context_hint: Additional context for AI agents to differentiate this instance, e.g., workspace URL, team name, or environment
+  instance_context_placeholder: 'e.g., valanticgroup.atlassian.net — Engineering workspace'
+  connect: Connect
+  quick_connect_name_description: Give this connection a unique name so you can identify it later, especially if you connect multiple instances of the same server.
+  quick_connect_name_hint: 'e.g., "Atlassian Rovo — valantic" or "Sentry — production"'
+  continue_to_authorization: Continue to Authorization
   workflow_user_id: Workflow User ID
   workflow_user_id_hint: 'Optional: Filter tools for specific workflow users'
   workflow_user_id_placeholder: e.g., user-123

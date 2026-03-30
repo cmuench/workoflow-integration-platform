@@ -325,6 +325,13 @@ integration:
   instance_name: Egzemplioriaus pavadinimas
   instance_name_hint: 'Draugiškas pavadinimas šiam integracijos egzemplioriui identifikuoti (pvz. „Gamybos Jira", „Dev SharePoint")'
   instance_name_placeholder: pvz. Gamyba
+  instance_context: Egzemplioriaus kontekstas
+  instance_context_hint: Papildomas kontekstas DI agentams, kad atskirtų šį egzempliorių, pvz. darbo srities URL, komandos pavadinimas arba aplinka
+  instance_context_placeholder: 'pvz. valanticgroup.atlassian.net — Inžinerijos darbo sritis'
+  connect: Prisijungti
+  quick_connect_name_description: Suteikite šiam ryšiui unikalų pavadinimą, kad galėtumėte jį atpažinti vėliau, ypač jei jungiate kelias to paties serverio instancijas.
+  quick_connect_name_hint: 'pvz. „Atlassian Rovo — valantic" arba „Sentry — produkcija"'
+  continue_to_authorization: Tęsti autorizaciją
   workflow_user_id: Darbo eigos vartotojo ID
   workflow_user_id_hint: 'Neprivaloma: Filtruoti įrankius konkretiems darbo eigos vartotojams'
   workflow_user_id_placeholder: pvz. user-123
