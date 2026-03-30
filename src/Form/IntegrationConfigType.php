@@ -7,6 +7,7 @@ use App\Integration\IntegrationInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -35,6 +36,19 @@ class IntegrationConfigType extends AbstractType
                 )
             ]
         ]);
+
+        // Add instance context field for Remote MCP integrations
+        if ($integration->getType() === 'remote_mcp') {
+            $builder->add('instance_context', TextareaType::class, [
+                'label' => 'integration.instance_context',
+                'required' => false,
+                'attr' => [
+                    'placeholder' => 'integration.instance_context_placeholder',
+                    'rows' => 2,
+                ],
+                'help' => 'integration.instance_context_hint',
+            ]);
+        }
 
         // Add dynamic credential fields
         foreach ($integration->getCredentialFields() as $field) {

@@ -184,6 +184,8 @@ class RemoteMcpIntegration implements PersonalizedSkillInterface
         return $this->twig->render('skills/prompts/remote_mcp_full.xml.twig', [
             'api_base_url' => $_ENV['APP_URL'] ?? 'https://subscribe-workflows.vcec.cloud',
             'integration_id' => $config?->getId() ?? 'XXX',
+            'instance_name' => $config?->getName(),
+            'instance_context' => $config?->getInstanceContext(),
         ]);
     }
 

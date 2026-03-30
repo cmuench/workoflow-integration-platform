@@ -93,3 +93,11 @@ services:
 
     App\Integration\UserIntegrations\RemoteMcpIntegration:
         tags: ['app.integration']
+
+    # Remote MCP Context Resolvers
+    App\Service\Integration\RemoteMcp\ContextResolver\AtlassianContextResolver:
+        tags: ['app.remote_mcp_context_resolver']
+
+    App\Service\Integration\RemoteMcp\ContextResolver\ContextResolverRegistry:
+        arguments:
+            $resolvers: !tagged_iterator 'app.remote_mcp_context_resolver'

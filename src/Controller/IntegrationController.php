@@ -272,14 +272,16 @@ class IntegrationController extends AbstractController
                             $existingCredentials[$key] = $value;
                         }
                     }
-                    // Also set name for form
+                    // Also set name and instance context for form
                     $existingCredentials['name'] = $config->getName();
+                    $existingCredentials['instance_context'] = $config->getInstanceContext();
                 } catch (\Exception $e) {
                     // If decryption fails, just continue with empty credentials
                     $this->addFlash('warning', 'Could not load existing credentials');
                 }
             } else {
                 $existingCredentials['name'] = $config->getName();
+                $existingCredentials['instance_context'] = $config->getInstanceContext();
             }
         }
 
@@ -385,6 +387,12 @@ class IntegrationController extends AbstractController
                 $tempConfig->setName($name);
                 $tempConfig->setActive(false);
 
+                // Set instance context for Remote MCP integrations
+                if ($type === 'remote_mcp' && isset($formData['instance_context'])) {
+                    $instanceContext = trim((string) $formData['instance_context']);
+                    $tempConfig->setInstanceContext($instanceContext !== '' ? $instanceContext : null);
+                }
+
                 // Save non-OAuth credential fields (e.g. sharepoint_url for tenant selection)
                 if (!empty($credentials)) {
                     $tempConfig->setEncryptedCredentials(
@@ -458,6 +466,13 @@ class IntegrationController extends AbstractController
             }
 
             $config->setName($name);
+
+            // Update instance context for Remote MCP integrations
+            if ($type === 'remote_mcp' && isset($formData['instance_context'])) {
+                $instanceContext = trim((string) $formData['instance_context']);
+                $config->setInstanceContext($instanceContext !== '' ? $instanceContext : null);
+            }
+
             $config->setEncryptedCredentials(
                 $this->encryptionService->encrypt(json_encode($credentials))
             );
@@ -1086,6 +1101,25 @@ class IntegrationController extends AbstractController
         }
 
         $server = $catalog[$serverKey];
+
+        return $this->render('integration/remote_mcp_quick_connect_name.html.twig', [
+            'serverKey' => $serverKey,
+            'server' => $server,
+            'suggestedName' => $server['name'],
+        ]);
+    }
+
+    #[Route('/remote-mcp/quick-connect/{serverKey}/confirm', name: 'app_remote_mcp_quick_connect_confirm', methods: ['POST'])]
+    public function remoteMcpQuickConnectConfirm(string $serverKey, Request $request): Response
+    {
+        $catalog = RemoteMcpServerCatalog::getServers();
+
+        if (!isset($catalog[$serverKey])) {
+            $this->addFlash('error', 'Unknown MCP server');
+            return $this->redirectToRoute('app_skills');
+        }
+
+        $server = $catalog[$serverKey];
         /** @var User $user */
         $user = $this->getUser();
         $sessionOrgId = $request->getSession()->get('current_organisation_id');
@@ -1096,13 +1130,23 @@ class IntegrationController extends AbstractController
             return $this->redirectToRoute('app_skills');
         }
 
-        // Create IntegrationConfig with pre-filled credentials
+        $name = trim((string) $request->request->get('name', ''));
+        if ($name === '') {
+            $name = $server['name'];
+        }
+
+        $instanceContext = trim((string) $request->request->get('instance_context', ''));
+
         $config = new IntegrationConfig();
         $config->setOrganisation($organisation);
         $config->setIntegrationType('remote_mcp');
         $config->setUser($user);
-        $config->setName($server['name']);
+        $config->setName($name);
         $config->setActive(false);
+
+        if ($instanceContext !== '') {
+            $config->setInstanceContext($instanceContext);
+        }
 
         $credentials = [
             'server_url' => $server['url'],

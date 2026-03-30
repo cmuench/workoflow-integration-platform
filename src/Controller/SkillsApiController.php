@@ -129,7 +129,8 @@ class SkillsApiController extends AbstractController
                     'type' => $integrationType,
                     'name' => $integration->getName(),
                     'instance_id' => $config->getId(),
-                    'instance_name' => $config->getName(), // The friendly name from the form
+                    'instance_name' => $config->getName(),
+                    'instance_context' => $config->getInstanceContext(),
                 ];
 
                 // Add system prompt if this is a personalized skill

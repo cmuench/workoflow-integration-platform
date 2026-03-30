@@ -8,6 +8,22 @@
     </description>
   </agent-definition>
 
+  {% if instance_name is defined and instance_name %}
+  <instance-context>
+    <instance-name>{{ instance_name }}</instance-name>
+    {% if instance_context is defined and instance_context %}
+    <instance-description>{{ instance_context }}</instance-description>
+    {% endif %}
+    <instruction>
+      This agent is connected to a specific instance named "{{ instance_name }}".
+      {% if instance_context is defined and instance_context %}
+      Additional context: {{ instance_context }}
+      {% endif %}
+      When reporting results, always clarify which instance the data comes from.
+    </instruction>
+  </instance-context>
+  {% endif %}
+
   <context>
     <user-info>
       <tenant-id>{{ '{{' }} $('When Executed by Another Workflow').item.json.tenantID{{ '}}' }}</tenant-id>

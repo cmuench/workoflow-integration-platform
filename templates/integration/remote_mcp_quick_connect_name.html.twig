@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'integration.connect'|trans|default('Connect') }} {{ server.name }} - Workoflow{% endblock %}
+
+{% block body %}
+<div class="integrations-page">
+    <div class="setup-container">
+        <div class="setup-card">
+            <div class="setup-header">
+                <div class="cell-with-logo" style="justify-content: center; margin-bottom: var(--space-sm);">
+                    <img src="/images/logos/mcp-servers/{{ server.logo }}"
+                         alt="{{ server.name }}"
+                         width="32" height="32"
+                         onerror="this.style.display='none'">
+                </div>
+                <h1>{{ 'integration.connect'|trans|default('Connect') }} {{ server.name }}</h1>
+                <p class="setup-description">
+                    {{ 'integration.quick_connect_name_description'|trans|default('Give this connection a unique name so you can identify it later, especially if you connect multiple instances of the same server.')|raw }}
+                </p>
+            </div>
+
+            <form method="post" action="{{ path('app_remote_mcp_quick_connect_confirm', {serverKey: serverKey}) }}" class="setup-form">
+                <div class="form-group">
+                    <label for="quick_connect_name">
+                        {{ 'integration.instance_name'|trans|default('Instance Name') }} <span class="required">*</span>
+                    </label>
+                    <span class="field-hint">{{ 'integration.quick_connect_name_hint'|trans|default('e.g., "Atlassian Rovo — valantic" or "Sentry — production"') }}</span>
+                    <input type="text"
+                           id="quick_connect_name"
+                           name="name"
+                           class="form-control"
+                           value="{{ suggestedName }}"
+                           required
+                           autocomplete="off"
+                           placeholder="{{ server.name }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="quick_connect_context">
+                        {{ 'integration.instance_context'|trans|default('Instance Context') }}
+                        <span class="text-secondary">({{ 'form.optional'|trans|default('optional') }})</span>
+                    </label>
+                    <span class="field-hint">{{ 'integration.instance_context_hint'|trans|default('Additional context for AI agents to differentiate this instance, e.g., workspace URL, team name, or environment') }}</span>
+                    <textarea id="quick_connect_context"
+                              name="instance_context"
+                              class="form-control"
+                              rows="2"
+                              placeholder="{{ 'integration.instance_context_placeholder'|trans|default('e.g., valanticgroup.atlassian.net — Engineering workspace') }}"></textarea>
+                </div>
+
+                <div class="form-actions" style="display: flex; gap: var(--space-sm); justify-content: flex-end; margin-top: var(--space-md);">
+                    <a href="{{ path('app_skills') }}" class="btn btn-secondary">
+                        {{ 'action.cancel'|trans|default('Cancel') }}
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i>
+                        {{ 'integration.continue_to_authorization'|trans|default('Continue to Authorization') }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

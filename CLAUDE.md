@@ -81,8 +81,24 @@ If you have read this file, greet me with "Hey Workoflow Dev"
 - **Infrastructure**: Docker & Docker Compose (see `docker-compose.yml` for service versions)
 
 ### Design Principles
-- **SOLID**: Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion
-- **KISS**: Keep It Simple, Stupid - prioritize simplicity and clarity
+
+#### SOLID
+- **Single Responsibility**: Each class has one reason to change. Controllers handle HTTP, services handle business logic, entities store data.
+- **Open/Closed**: Extend behavior by adding new classes (e.g., new integrations, new context resolvers), not modifying existing ones. Use interfaces + tagged iterators for plugin points.
+- **Liskov Substitution**: All implementations of an interface must be interchangeable. If a method accepts `IntegrationInterface`, any integration must work there.
+- **Interface Segregation**: Keep interfaces small and focused. Don't force classes to implement methods they don't need (e.g., `PlatformSkillInterface` vs `PersonalizedSkillInterface`).
+- **Dependency Inversion**: Depend on abstractions (interfaces), not concrete classes. Inject dependencies via constructor, never instantiate services directly.
+
+#### Clean Code
+- **Meaningful names**: Variables, methods, and classes should reveal intent. No abbreviations, no generic names like `$data` or `$result` without context.
+- **Small functions**: Each function does one thing. If you need a comment to explain a block, extract it into a well-named method.
+- **No dead code**: Delete unused code, don't comment it out. Git history preserves everything.
+- **Fail fast**: Validate inputs early, throw specific exceptions. Don't let invalid state propagate through layers.
+- **DRY where it matters**: Extract duplication only when three or more occurrences exist AND the shared concept is the same. Premature abstraction is worse than duplication.
+
+#### KISS
+- Prioritize simplicity and clarity. Choose the simplest solution that meets requirements.
+- Avoid speculative abstractions — build for today's needs, not hypothetical futures.
 
 ### Directory Structure
 ```

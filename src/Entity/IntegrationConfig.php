@@ -48,6 +48,9 @@ class IntegrationConfig
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $disconnectReason = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $instanceContext = null;
+
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $lastAccessedAt = null;
 
@@ -203,6 +206,18 @@ class IntegrationConfig
     public function setUpdatedAt(\DateTimeInterface $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    public function getInstanceContext(): ?string
+    {
+        return $this->instanceContext;
+    }
+
+    public function setInstanceContext(?string $instanceContext): static
+    {
+        $this->instanceContext = $instanceContext;
+
         return $this;
     }
 

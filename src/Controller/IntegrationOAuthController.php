@@ -14,6 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use App\Service\Integration\RemoteMcpOAuthService;
+use App\Service\Integration\RemoteMcp\ContextResolver\ContextResolverRegistry;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[Route('/integrations/oauth')]
@@ -25,6 +26,7 @@ class IntegrationOAuthController extends AbstractController
         private EncryptionService $encryptionService,
         private HttpClientInterface $httpClient,
         private RemoteMcpOAuthService $remoteMcpOAuthService,
+        private ContextResolverRegistry $contextResolverRegistry,
     ) {
     }
 
@@ -1150,6 +1152,18 @@ class IntegrationOAuthController extends AbstractController
                 $this->encryptionService->encrypt(json_encode($credentials))
             );
             $config->setActive(true);
+
+            // Auto-enrich instance context if not manually set
+            if (!$config->getInstanceContext()) {
+                $resolvedContext = $this->contextResolverRegistry->resolve(
+                    $credentials['server_url'] ?? '',
+                    $credentials,
+                );
+                if ($resolvedContext !== null) {
+                    $config->setInstanceContext($resolvedContext);
+                }
+            }
+
             $this->entityManager->flush();
 
             $this->cleanupOAuthSession($session);

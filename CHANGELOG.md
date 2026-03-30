@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **OAuth 2.0 authentication for Remote MCP Servers** — You can now connect to MCP servers that require OAuth 2.0 authentication (e.g., Atlassian Rovo MCP). Select "OAuth 2.0 (MCP Standard)" as the authentication type, and the platform handles registration and authorization automatically — no client credentials needed.
 - **"Detect Auth Support" button** — When setting up a Remote MCP server with OAuth 2.0, a new button lets you check if the server supports OAuth before connecting.
 - **Remote MCP Server Catalog** — The "Add Remote MCP Server" button now opens a searchable catalog of 60 verified MCP servers (Notion, Figma, Stripe, Linear, Miro, and more). Click any server to connect instantly via OAuth — no manual URL entry needed. A "Custom MCP Server" option is still available for servers not in the catalog.
+- **Instance naming for Remote MCP Servers** — When connecting a catalog server, you're now prompted to give the connection a unique name (e.g., "Atlassian Rovo — valantic"). This helps the AI agent distinguish between multiple connections to the same server type. An optional context field lets you add workspace details visible to agents.
+- **Automatic workspace detection for Atlassian** — After connecting an Atlassian MCP server via OAuth, the platform automatically detects which workspace you authorized (e.g., "valanticgroup.atlassian.net") and stores it as instance context for the AI agent.
 
 ## 2026-03-27
 
