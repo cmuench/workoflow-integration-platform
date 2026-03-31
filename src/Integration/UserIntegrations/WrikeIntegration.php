@@ -7,14 +7,18 @@ use App\Integration\CredentialField;
 use App\Integration\PersonalizedSkillInterface;
 use App\Integration\ToolCategory;
 use App\Integration\ToolDefinition;
+use App\Service\EncryptionService;
 use App\Service\Integration\WrikeService;
+use Doctrine\ORM\EntityManagerInterface;
 use Twig\Environment;
 
 class WrikeIntegration implements PersonalizedSkillInterface
 {
     public function __construct(
         private WrikeService $wrikeService,
-        private Environment $twig
+        private Environment $twig,
+        private EncryptionService $encryptionService,
+        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -327,6 +331,15 @@ class WrikeIntegration implements PersonalizedSkillInterface
             throw new \InvalidArgumentException('Wrike integration requires credentials');
         }
 
+        // Handle token refresh and persist (like SharePoint/Outlook integrations)
+        $expiresAt = $credentials['expires_at'] ?? 0;
+        if (time() >= ($expiresAt - 300)) {
+            $credentials = $this->wrikeService->ensureValidToken($credentials);
+            if (isset($parameters['configId'])) {
+                $this->persistRefreshedCredentials((int) $parameters['configId'], $credentials);
+            }
+        }
+
         return match ($toolName) {
             // Task Management
             'wrike_search_tasks' => $this->wrikeService->searchTasks(
@@ -400,6 +413,21 @@ class WrikeIntegration implements PersonalizedSkillInterface
 
             default => throw new \InvalidArgumentException("Unknown tool: $toolName")
         };
+    }
+
+    private function persistRefreshedCredentials(int $configId, array $credentials): void
+    {
+        try {
+            $config = $this->entityManager->getRepository(IntegrationConfig::class)->find($configId);
+            if ($config) {
+                $config->setEncryptedCredentials(
+                    $this->encryptionService->encrypt(json_encode($credentials))
+                );
+                $this->entityManager->flush();
+            }
+        } catch (\Exception $e) {
+            error_log('Failed to persist refreshed Wrike credentials for config ' . $configId . ': ' . $e->getMessage());
+        }
     }
 
     /**

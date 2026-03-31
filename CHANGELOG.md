@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## 2026-03-31
 
+### Fixed
+- **Wrike: tools failing with "500 Internal Server Error"** — When the Wrike access token expired, the platform refreshed it but did not save the new tokens. Because Wrike invalidates old refresh tokens on each use, subsequent requests failed permanently. The refreshed tokens are now persisted correctly (matching the behavior of SharePoint, Outlook, and MS Teams integrations).
+
 ### Added
 - **Tenant UUID and Workoflow User IDs on Members page** — Admins can now see the Tenant UUID at the top of the Members page and each member's Workoflow User ID in the table, both with copy buttons for quick access.
 - **Phoenix trace debugging script** — New `scripts/get_stacktrace.sh` lets developers fetch conversation traces from Phoenix Arize by user ID and date range, for debugging prompt-related bug reports.
