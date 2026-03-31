@@ -292,6 +292,48 @@ class JiraService
             );
         }
 
+        // Auto-extract text content from custom fields (multi-tenant safe)
+        // Capped at 3000 chars total to avoid token bloat
+        $knownFields = array_flip(self::AI_FRIENDLY_DETAIL_FIELDS);
+        $customFields = [];
+        $customFieldsLength = 0;
+        foreach ($fields as $fieldId => $value) {
+            if (!str_starts_with($fieldId, 'customfield_')) {
+                continue;
+            }
+            if (isset($knownFields[$fieldId])) {
+                continue;
+            }
+            if (empty($value)) {
+                continue;
+            }
+
+            $text = null;
+            // ADF content (rich text custom fields like acceptance criteria)
+            if (is_array($value) && ($value['type'] ?? '') === 'doc') {
+                $text = $this->convertADFToPlainText($value);
+            } elseif (is_string($value)) {
+                $text = $value;
+            }
+
+            if ($text === null || trim($text) === '') {
+                continue;
+            }
+
+            // Truncate individual field and check total budget
+            if (strlen($text) > self::MAX_DESCRIPTION_LENGTH) {
+                $text = substr($text, 0, self::MAX_DESCRIPTION_LENGTH) . '...';
+            }
+            if ($customFieldsLength + strlen($text) > 3000) {
+                break;
+            }
+            $customFields[$fieldId] = $text;
+            $customFieldsLength += strlen($text);
+        }
+        if (!empty($customFields)) {
+            $mapped['customFields'] = $customFields;
+        }
+
         return $mapped;
     }
 
@@ -604,18 +646,10 @@ class JiraService
     {
         $url = $this->validateAndNormalizeUrl($credentials['url']);
 
-        // Build fields list including any additional custom fields
-        $fieldsToFetch = self::AI_FRIENDLY_DETAIL_FIELDS;
-        if (!empty($additionalFields)) {
-            $fieldsToFetch = array_unique(array_merge($fieldsToFetch, $additionalFields));
-        }
-
         try {
+            // Fetch all fields — custom text fields are auto-extracted in the mapping
             $response = $this->httpClient->request('GET', $url . '/rest/api/3/issue/' . $issueKey, [
                 'auth_basic' => [$credentials['username'], $credentials['api_token']],
-                'query' => [
-                    'fields' => implode(',', $fieldsToFetch),
-                ],
             ]);
 
             $issue = $response->toArray();

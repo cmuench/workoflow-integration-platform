@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - **Tenant UUID and Workoflow User IDs on Members page** — Admins can now see the Tenant UUID at the top of the Members page and each member's Workoflow User ID in the table, both with copy buttons for quick access.
+- **Phoenix trace debugging script** — New `scripts/get_stacktrace.sh` lets developers fetch conversation traces from Phoenix Arize by user ID and date range, for debugging prompt-related bug reports.
+
+### Fixed
+- **Jira: missing acceptance criteria and custom field content** — When reading a Jira ticket, custom text fields (like acceptance criteria) were not returned unless manually requested. The Jira integration now auto-discovers and includes text content from custom fields (capped at 3000 chars to control token usage).
 
 ## 2026-03-30
 
