@@ -344,6 +344,44 @@ All critical configurations via .env:
 - API Access Logs
 - Error Tracking via Monolog
 
+### Debugging Prompt Issues (Phoenix Arize Traces)
+When users report prompt-related bugs (via GH tickets with `BUG_REPORT:` prefix), use `scripts/get_stacktrace.sh` to fetch conversation traces from Phoenix Arize on production.
+
+**Prerequisites**: SSH access to `val-workoflow-prod`, `jq` installed locally.
+
+**The `workflow_user_id`** is visible on the Members page (`/organisation/members`) and stored as `user.id` in Phoenix spans (mapped by the ADK OpenInference instrumentor).
+
+```bash
+# List users with recent traces (find the workflow_user_id)
+./scripts/get_stacktrace.sh --list-users 7d
+
+# Get full traces for a user on a specific date
+./scripts/get_stacktrace.sh <workflow_user_id> 2026-03-25
+
+# Compact mode (key fields + truncated I/O, easier to scan)
+./scripts/get_stacktrace.sh --compact <workflow_user_id> 2026-03-25
+
+# Date range formats: 1h, 24h, 7d, 30d, YYYY-MM-DD, YYYY-MM-DD:YYYY-MM-DD
+./scripts/get_stacktrace.sh <workflow_user_id> 2026-03-20:2026-03-25
+
+# Show DB schema (if queries fail due to schema changes)
+./scripts/get_stacktrace.sh --schema
+
+# Show available span attribute keys and span names
+./scripts/get_stacktrace.sh --sample 24h
+
+# Print SQL without executing (debug)
+./scripts/get_stacktrace.sh --raw-sql <workflow_user_id> 24h
+```
+
+**Debugging workflow**:
+1. Get the bug report date and `workflow_user_id` from the Jira ticket
+2. Run `--compact` for the date range to find relevant traces
+3. Look at `tool.execute` spans for tool I/O, `call_llm` for LLM reasoning, `invocation [workoflow]` for the root span
+4. The `input_preview`/`output_preview` fields show what the user asked and what the agent returned
+
+**Phoenix DB details**: PostgreSQL on `phoenix-postgres` container (user: `phoenix`, db: `phoenix`). Traces are in `spans` table with attributes as JSONB. Key JSONB paths: `attributes->'user'->>'id'` (workflow_user_id), `attributes->'input'->>'value'` (input), `attributes->'output'->>'value'` (output).
+
 ## Maintenance
 
 ### Backup
