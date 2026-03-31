@@ -3193,6 +3193,85 @@ body {
   }
 }
 
+// Tenant info box (members page)
+.tenant-info-box {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-lg);
+
+  .tenant-info-label {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .tenant-info-value {
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--border-radius);
+    font-family: monospace;
+    user-select: all;
+  }
+}
+
+.btn-copy-inline {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+
+  &:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  &.copied {
+    background: var(--success-color);
+    border-color: var(--success-color);
+    color: white;
+  }
+}
+
+.btn-copy-small {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+}
+
+.workflow-id-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+
+  .workflow-id-value {
+    font-size: var(--text-xs);
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+    padding: 2px var(--space-xs);
+    border-radius: var(--border-radius);
+    font-family: monospace;
+    user-select: all;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 // Members page specific styles
 .members-table {
   background: var(--bg-card);

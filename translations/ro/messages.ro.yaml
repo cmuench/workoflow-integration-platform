@@ -577,7 +577,7 @@ user:
   role: Rol
   joined_at: Data înscrierii
   organisation: Canal
-  workflow_user_id: ID-ul meu de Workflow
+  workflow_user_id: ID utilizator Workoflow
 
 profile:
   title: Profilul meu

@@ -578,7 +578,7 @@ user:
   role: Rolle
   joined_at: Beigetreten am
   organisation: Mandant
-  workflow_user_id: Meine Workflow Benutzer-ID
+  workflow_user_id: Workoflow Benutzer-ID
 
 
 profile:

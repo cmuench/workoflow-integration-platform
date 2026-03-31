@@ -4,7 +4,7 @@
 
 {% block body %}
 <div class="dashboard-page">
-    
+
     <div class="dashboard-container">
         <div class="page-header">
             <h1 class="dashboard-title">{{ 'organisation.members'|trans }}</h1>
@@ -15,12 +15,21 @@
             {% endif %}
         </div>
 
+        <div class="tenant-info-box">
+            <span class="tenant-info-label">{{ 'organisation.uuid'|trans }}</span>
+            <code class="tenant-info-value">{{ organisation.uuid }}</code>
+            <button type="button" class="btn-copy-inline" onclick="copyToClipboard('{{ organisation.uuid }}', this)">
+                {{ 'action.copy'|trans }}
+            </button>
+        </div>
+
         <div class="members-table">
             <table>
                 <thead>
                     <tr>
                         <th>{{ 'user.name'|trans }}</th>
                         <th>{{ 'user.email'|trans }}</th>
+                        <th>{{ 'user.workflow_user_id'|trans }}</th>
                         <th>{{ 'user.role'|trans }}</th>
                         <th>{{ 'user.joined_at'|trans }}</th>
                         {% if app.user.isAdmin() %}
@@ -33,6 +42,24 @@
                         <tr>
                             <td>{{ member.name }}</td>
                             <td>{{ member.email }}</td>
+                            <td>
+                                {% set workflowUserId = null %}
+                                {% for userOrg in member.userOrganisations %}
+                                    {% if userOrg.organisation.id == organisation.id %}
+                                        {% set workflowUserId = userOrg.workflowUserId %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% if workflowUserId %}
+                                    <div class="workflow-id-cell">
+                                        <code class="workflow-id-value">{{ workflowUserId }}</code>
+                                        <button type="button" class="btn-copy-inline btn-copy-small" onclick="copyToClipboard('{{ workflowUserId }}', this)">
+                                            {{ 'action.copy'|trans }}
+                                        </button>
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
                             <td>
                                 <span class="badge badge-{{ member.isAdmin() ? 'admin' : 'member' }}">
                                     {{ member.isAdmin() ? 'Admin' : 'Member' }}
@@ -111,6 +138,19 @@ document.getElementById('inviteModal').addEventListener('click', (e) => {
         hideInviteModal();
     }
 });
+
+function copyToClipboard(text, button) {
+    navigator.clipboard.writeText(text).then(() => {
+        const originalText = button.textContent;
+        button.textContent = '{{ 'action.copied'|trans }}';
+        button.classList.add('copied');
+
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove('copied');
+        }, 2000);
+    });
+}
 </script>
 {% endif %}
 {% endblock %}

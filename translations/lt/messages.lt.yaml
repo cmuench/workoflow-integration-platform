@@ -577,7 +577,7 @@ user:
   role: Rolė
   joined_at: Prisijungė
   organisation: Kanalas
-  workflow_user_id: Mano darbo eigos vartotojo ID
+  workflow_user_id: Workoflow vartotojo ID
 
 profile:
   title: Mano profilis

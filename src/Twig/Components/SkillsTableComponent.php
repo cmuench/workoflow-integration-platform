@@ -22,7 +22,7 @@ class SkillsTableComponent
     {
         return array_values(array_filter(
             $this->integrations,
-            fn($integration) => !($integration['isSystem'] ?? false) && ($integration['hasCredentials'] ?? false)
+            fn($integration) => !($integration['isSystem'] ?? false) && ($integration['hasCredentials'] ?? false) && ($integration['type'] ?? '') !== 'remote_mcp'
         ));
     }
 
