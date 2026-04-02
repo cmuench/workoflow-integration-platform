@@ -54,6 +54,7 @@
         "predis/predis": "^3.0",
         "ramsey/uuid": "^4.7",
         "runtime/frankenphp-symfony": "*",
+        "sentry/sentry-symfony": "^5.10",
         "smalot/pdfparser": "^2.0",
         "symfony/asset": "8.0.*",
         "symfony/console": "8.0.*",

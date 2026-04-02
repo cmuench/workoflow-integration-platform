@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## 2026-04-02
 
+### Added
+- **Error monitoring with Sentry** — Both server-side (PHP) and client-side (JavaScript) errors are now automatically reported to Sentry. This helps detect and diagnose 500 errors and frontend issues faster. The integration is resilient — if Sentry is unreachable, the application continues to work normally without any impact.
+
 ### Fixed
 - **Remote MCP Server: connection failures for Miro, Make, CB Insights, Pylon, Sanity, and Windsor.ai** — "Test Connection" returned a 404 error for these servers because the catalog had incorrect endpoint URLs. All six URLs have been corrected.
 
