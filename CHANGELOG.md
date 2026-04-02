@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 2026-04-02
+
+### Fixed
+- **Remote MCP Server: connection failures for Miro, Make, CB Insights, Pylon, Sanity, and Windsor.ai** — "Test Connection" returned a 404 error for these servers because the catalog had incorrect endpoint URLs. All six URLs have been corrected.
+
 ## 2026-03-31
 
 ### Fixed
