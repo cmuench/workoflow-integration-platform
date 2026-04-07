@@ -33,18 +33,18 @@ class RemoteMcpService
      * @param array<string, mixed> $credentials
      * @return array<int, array<string, mixed>>
      */
-    public function discoverTools(array $credentials): array
+    public function discoverTools(array $credentials, ?int $configId = null): array
     {
         $cacheKey = self::CACHE_PREFIX . md5(json_encode([
             $credentials['server_url'] ?? '',
             $credentials['auth_type'] ?? '',
         ]));
 
-        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($credentials): array {
+        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($credentials, $configId): array {
             $item->expiresAfter(self::CACHE_TTL);
 
-            $sessionId = $this->initialize($credentials);
-            $tools = $this->listTools($credentials, $sessionId);
+            $sessionId = $this->initialize($credentials, $configId);
+            $tools = $this->listTools($credentials, $sessionId, $configId);
 
             return $tools;
         });
@@ -57,11 +57,11 @@ class RemoteMcpService
      * @param array<string, mixed> $parameters
      * @return array<string, mixed>
      */
-    public function executeTool(array $credentials, string $toolName, array $parameters): array
+    public function executeTool(array $credentials, string $toolName, array $parameters, ?int $configId = null): array
     {
-        $sessionId = $this->initialize($credentials);
+        $sessionId = $this->initialize($credentials, $configId);
 
-        return $this->callTool($credentials, $sessionId, $toolName, $parameters);
+        return $this->callTool($credentials, $sessionId, $toolName, $parameters, $configId);
     }
 
     /**
@@ -69,10 +69,10 @@ class RemoteMcpService
      *
      * @param array<string, mixed> $credentials
      */
-    public function testConnection(array $credentials): bool
+    public function testConnection(array $credentials, ?int $configId = null): bool
     {
         try {
-            $this->initialize($credentials);
+            $this->initialize($credentials, $configId);
 
             return true;
         } catch (\Exception $e) {
@@ -91,7 +91,7 @@ class RemoteMcpService
      * @param array<string, mixed> $credentials
      * @return array<string, mixed>
      */
-    public function testConnectionDetailed(array $credentials): array
+    public function testConnectionDetailed(array $credentials, ?int $configId = null): array
     {
         $testedEndpoints = [];
         $details = [];
@@ -120,7 +120,7 @@ class RemoteMcpService
 
         // Step 2: MCP Initialize handshake
         try {
-            $sessionId = $this->initialize($credentials);
+            $sessionId = $this->initialize($credentials, $configId);
             $testedEndpoints[] = ['endpoint' => $url, 'method' => 'initialize', 'status' => 'OK'];
             $details[] = 'MCP handshake successful';
 
@@ -142,7 +142,7 @@ class RemoteMcpService
         // Step 3: List tools
         $toolCount = 0;
         try {
-            $tools = $this->listTools($credentials, $sessionId);
+            $tools = $this->listTools($credentials, $sessionId, $configId);
             $toolCount = count($tools);
             $testedEndpoints[] = ['endpoint' => $url, 'method' => 'tools/list', 'status' => 'OK'];
             $details[] = "Discovered {$toolCount} tool(s)";
@@ -185,10 +185,10 @@ class RemoteMcpService
      *
      * @param array<string, mixed> $credentials
      */
-    private function initialize(array $credentials): ?string
+    private function initialize(array $credentials, ?int $configId = null): ?string
     {
         $url = $this->validateUrl($credentials['server_url'] ?? '');
-        $credentials = $this->prepareCredentials($credentials);
+        $credentials = $this->prepareCredentials($credentials, $configId);
         $headers = $this->buildHeaders($credentials);
 
         // Step 1: Send initialize request
@@ -259,10 +259,10 @@ class RemoteMcpService
      * @param array<string, mixed> $credentials
      * @return array<int, array<string, mixed>>
      */
-    private function listTools(array $credentials, ?string $sessionId): array
+    private function listTools(array $credentials, ?string $sessionId, ?int $configId = null): array
     {
         $url = $this->validateUrl($credentials['server_url'] ?? '');
-        $credentials = $this->prepareCredentials($credentials);
+        $credentials = $this->prepareCredentials($credentials, $configId);
         $headers = $this->buildHeaders($credentials);
 
         $payload = [
@@ -302,10 +302,10 @@ class RemoteMcpService
      * @param array<string, mixed> $parameters
      * @return array<string, mixed>
      */
-    private function callTool(array $credentials, ?string $sessionId, string $toolName, array $parameters): array
+    private function callTool(array $credentials, ?string $sessionId, string $toolName, array $parameters, ?int $configId = null): array
     {
         $url = $this->validateUrl($credentials['server_url'] ?? '');
-        $credentials = $this->prepareCredentials($credentials);
+        $credentials = $this->prepareCredentials($credentials, $configId);
         $headers = $this->buildHeaders($credentials);
 
         $payload = [

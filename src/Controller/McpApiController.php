@@ -420,7 +420,7 @@ class McpApiController extends AbstractController
                 'organisationId', 'organisationUuid', 'workflowUserId', 'configId',
             ]));
 
-            $result = $this->remoteMcpService->executeTool($credentials, $remoteToolName, $forwardParams);
+            $result = $this->remoteMcpService->executeTool($credentials, $remoteToolName, $forwardParams, $config->getId());
 
             $this->integrationConfigRepository->updateLastAccessed($config);
 

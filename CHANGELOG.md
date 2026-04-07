@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 - **Remote MCP tools failing with "Tool not found"** — After the integration name prefix was introduced, tools from remote MCP servers (e.g. Atlassian Rovo, Miro) could not be executed because the prefix was sent to the remote server, which doesn't recognize it. Remote MCP tools now work correctly again.
+- **Remote MCP OAuth2 servers (Miro, Atlassian Rovo) failing after token expiry** — When an OAuth2 access token expired, the platform refreshed it but did not save the new tokens. Because providers like Miro invalidate old refresh tokens on each use (token rotation), subsequent requests failed with "refresh token does not exist". Refreshed tokens are now persisted correctly across all Remote MCP operations.
 
 ## 2026-04-02
 

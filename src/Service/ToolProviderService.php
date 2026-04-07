@@ -392,7 +392,7 @@ class ToolProviderService
         }
 
         try {
-            $mcpTools = $this->remoteMcpService->discoverTools($credentials);
+            $mcpTools = $this->remoteMcpService->discoverTools($credentials, $config->getId());
         } catch (\Exception $e) {
             return [];
         }

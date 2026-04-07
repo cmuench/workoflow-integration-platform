@@ -43,6 +43,8 @@ class RemoteMcpIntegration implements PersonalizedSkillInterface
             throw new \RuntimeException('Credentials are required for Remote MCP Server');
         }
 
+        $configId = isset($parameters['configId']) ? (int) $parameters['configId'] : null;
+
         // Remove internal context parameters before forwarding
         $forwardParams = array_diff_key($parameters, array_flip([
             'organisationId',
@@ -51,7 +53,7 @@ class RemoteMcpIntegration implements PersonalizedSkillInterface
             'configId',
         ]));
 
-        return $this->remoteMcpService->executeTool($credentials, $toolName, $forwardParams);
+        return $this->remoteMcpService->executeTool($credentials, $toolName, $forwardParams, $configId);
     }
 
     public function requiresCredentials(): bool

@@ -862,7 +862,7 @@ class IntegrationController extends AbstractController
 
             // For Remote MCP, use detailed testing
             if ($type === 'remote_mcp') {
-                $result = $this->remoteMcpService->testConnectionDetailed($credentials);
+                $result = $this->remoteMcpService->testConnectionDetailed($credentials, $config->getId());
 
                 if ($result['success'] && !$config->isConnected()) {
                     $this->connectionStatusService->markReconnected($config);
