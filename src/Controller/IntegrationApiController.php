@@ -536,12 +536,23 @@ class IntegrationApiController extends AbstractController
         );
 
         try {
+            // Strip the integration name prefix that was added during tool discovery
+            // e.g. "atlassian_rovo_getJiraIssue" → "getJiraIssue"
+            $configName = $config->getName();
+            $remoteToolName = $toolName;
+            if ($configName !== null && $configName !== '') {
+                $prefix = strtolower(preg_replace('/[^a-zA-Z0-9]/', '_', $configName)) . '_';
+                if (str_starts_with($toolName, $prefix)) {
+                    $remoteToolName = substr($toolName, strlen($prefix));
+                }
+            }
+
             // Strip internal parameters before forwarding
             $forwardParams = array_diff_key($parameters, array_flip([
                 'organisationId', 'organisationUuid', 'workflowUserId', 'configId',
             ]));
 
-            $result = $this->remoteMcpService->executeTool($credentials, $toolName, $forwardParams);
+            $result = $this->remoteMcpService->executeTool($credentials, $remoteToolName, $forwardParams);
 
             $this->integrationConfigRepository->updateLastAccessed($config);
 

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 2026-04-07
+
+### Fixed
+- **Remote MCP tools failing with "Tool not found"** — After the integration name prefix was introduced, tools from remote MCP servers (e.g. Atlassian Rovo, Miro) could not be executed because the prefix was sent to the remote server, which doesn't recognize it. Remote MCP tools now work correctly again.
+
 ## 2026-04-02
 
 ### Changed
