@@ -124,8 +124,8 @@ class IntegrationApiController extends AbstractController
             'workflow_user_id' => $workflowUserId
         ]);
 
-        // Handle orchestrator native agent tools (prefixed with "orchestrator.")
-        if (str_starts_with($toolId, 'orchestrator.')) {
+        // Handle orchestrator native agent tools (prefixed with "orchestrator_")
+        if (str_starts_with($toolId, 'orchestrator_')) {
             return $this->executeOrchestratorTool(
                 $organisation,
                 $toolId,
@@ -389,8 +389,8 @@ class IntegrationApiController extends AbstractController
             return $this->json(['error' => 'Orchestrator API URL not configured'], Response::HTTP_BAD_REQUEST);
         }
 
-        // Strip "orchestrator." prefix to get bare tool name
-        $toolName = substr($toolId, strlen('orchestrator.'));
+        // Strip "orchestrator_" prefix to get bare tool name
+        $toolName = substr($toolId, strlen('orchestrator_'));
 
         // Log execution start
         $this->auditLogService->logWithOrganisation(

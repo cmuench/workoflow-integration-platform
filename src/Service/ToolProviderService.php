@@ -175,8 +175,8 @@ class ToolProviderService
                 $tools[] = [
                     'type' => 'function',
                     'function' => [
-                        'name' => 'orchestrator.' . $toolName,
-                        'tool_id' => 'orchestrator.' . $toolName,
+                        'name' => 'orchestrator_' . $toolName,
+                        'tool_id' => 'orchestrator_' . $toolName,
                         'description' => $description,
                         'parameters' => $parameters,
                     ],

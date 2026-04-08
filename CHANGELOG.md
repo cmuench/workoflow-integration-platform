@@ -4,7 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 2026-04-09
+
+### Fixed
+- **Orchestrator tool names invalid for MCP clients** — Orchestrator tools (employee_search, employee_profile, web_search, web_read) used a dot separator (`orchestrator.employee_search`) which violates the MCP tool name pattern `^[a-zA-Z0-9_-]{1,64}$`. Changed to underscore (`orchestrator_employee_search`). This caused Claude Desktop to show a validation error overlay on startup.
+
 ## 2026-04-08
+
+### Improved
+- **Platform Skills page: description column now shows full text** — The DESCRIPTION column on the Manage Platform Skills page was too narrow and truncated agent descriptions. The column is now wider and displays the complete description without cutting off text.
 
 ### Fixed
 - **SharePoint: search result links broken due to spaces in URLs** — Links to SharePoint documents with spaces in folder or file names (e.g. "Freigegebene Dokumente") were not clickable. URLs are now properly encoded.
