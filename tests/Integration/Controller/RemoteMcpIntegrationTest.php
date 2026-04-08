@@ -288,7 +288,7 @@ class RemoteMcpIntegrationTest extends AbstractIntegrationTestCase
         $this->mockMcpServerSuccess();
 
         $crawler = $this->client->request('GET', '/skills/setup/remote_mcp');
-        $form = $crawler->selectButton('Save Configuration')->form();
+        $form = $crawler->selectButton('Save & Connect via OAuth2')->form();
 
         $values = $form->getValues();
         $fields = [];
@@ -347,7 +347,7 @@ class RemoteMcpIntegrationTest extends AbstractIntegrationTestCase
         $this->mockMcpServerFailure();
 
         $crawler = $this->client->request('GET', '/skills/setup/remote_mcp');
-        $form = $crawler->selectButton('Save Configuration')->form();
+        $form = $crawler->selectButton('Save & Connect via OAuth2')->form();
 
         $values = $form->getValues();
         $fields = [];
@@ -473,8 +473,12 @@ class RemoteMcpIntegrationTest extends AbstractIntegrationTestCase
     {
         $this->mockMcpServerSuccess();
 
-        $config = $this->createRemoteMcpConfig('API Test MCP ' . uniqid());
+        $configName = 'API Test MCP ' . uniqid();
+        $config = $this->createRemoteMcpConfig($configName);
         $configId = $config->getId();
+
+        // Compute expected prefix: same logic as ToolProviderService
+        $namePrefix = strtolower(preg_replace('/[^a-zA-Z0-9]/', '_', $configName)) . '_';
 
         $this->client->request('GET', '/api/mcp/tools', [], [], [
             'HTTP_X_PROMPT_TOKEN' => $this->validToken,
@@ -494,10 +498,10 @@ class RemoteMcpIntegrationTest extends AbstractIntegrationTestCase
 
         $this->assertGreaterThanOrEqual(2, count($remoteTools), 'Should have at least 2 remote MCP tools (get_weather, search_docs)');
 
-        // Verify tool names include config ID suffix
+        // Verify tool names include integration name prefix and config ID suffix
         $toolNames = array_map(fn(array $t) => $t['function']['name'], array_values($remoteTools));
-        $this->assertContains('get_weather_' . $configId, $toolNames);
-        $this->assertContains('search_docs_' . $configId, $toolNames);
+        $this->assertContains($namePrefix . 'get_weather_' . $configId, $toolNames);
+        $this->assertContains($namePrefix . 'search_docs_' . $configId, $toolNames);
 
         // Verify description includes server URL hint
         $firstTool = array_values($remoteTools)[0];
@@ -546,9 +550,11 @@ class RemoteMcpIntegrationTest extends AbstractIntegrationTestCase
     {
         $this->mockMcpServerSuccess();
 
-        $config = $this->createRemoteMcpConfig('Execute Test MCP ' . uniqid());
+        $configName = 'Execute Test MCP ' . uniqid();
+        $config = $this->createRemoteMcpConfig($configName);
         $configId = $config->getId();
-        $toolId = 'get_weather_' . $configId;
+        $namePrefix = strtolower(preg_replace('/[^a-zA-Z0-9]/', '_', $configName)) . '_';
+        $toolId = $namePrefix . 'get_weather_' . $configId;
 
         $this->client->request('POST', '/api/mcp/execute', [], [], [
             'HTTP_X_PROMPT_TOKEN' => $this->validToken,
@@ -574,9 +580,11 @@ class RemoteMcpIntegrationTest extends AbstractIntegrationTestCase
 
     public function testMcpApiRejectsDisconnectedRemoteMcpExecution(): void
     {
-        $config = $this->createRemoteMcpConfig('Disconnected Exec MCP ' . uniqid(), connected: false);
+        $configName = 'Disconnected Exec MCP ' . uniqid();
+        $config = $this->createRemoteMcpConfig($configName, connected: false);
         $configId = $config->getId();
-        $toolId = 'get_weather_' . $configId;
+        $namePrefix = strtolower(preg_replace('/[^a-zA-Z0-9]/', '_', $configName)) . '_';
+        $toolId = $namePrefix . 'get_weather_' . $configId;
 
         $this->client->request('POST', '/api/mcp/execute', [], [], [
             'HTTP_X_PROMPT_TOKEN' => $this->validToken,
