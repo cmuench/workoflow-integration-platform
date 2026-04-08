@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 2026-04-08
+
+### Fixed
+- **SharePoint: search result links broken due to spaces in URLs** — Links to SharePoint documents with spaces in folder or file names (e.g. "Freigegebene Dokumente") were not clickable. URLs are now properly encoded.
+- **SharePoint: page titles showing garbled markup** — SharePoint page titles in search results displayed raw API markup instead of clean text. Titles now display correctly.
+- **SharePoint: site URL field pointing to wrong location** — The site URL in search results incorrectly pointed to the item URL instead of the actual SharePoint site.
+
+### Improved
+- **SharePoint: curated pages now ranked higher in search results** — SharePoint Pages (editorially created content) are now prioritized over random files in relevance scoring, making it easier to find official documentation and entry pages.
+- **SharePoint: searching for guides/manuals no longer misses relevant pages** — When asking for instructions or a guide about a product, the bot now searches by topic name instead of filtering by document-type keywords, which previously excluded relevant SharePoint pages from results.
+
 ## 2026-04-07
 
 ### Fixed

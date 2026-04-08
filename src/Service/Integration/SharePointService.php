@@ -1331,9 +1331,11 @@ class SharePointService
                 }
             }
 
-            // Type bonus: 5 points for files and pages (most useful result types)
+            // Type bonus: pages are curated entry points and deserve higher priority
             $type = $result['type'] ?? '';
-            if ($type === 'file' || $type === 'page') {
+            if ($type === 'page') {
+                $score += 15;
+            } elseif ($type === 'file') {
                 $score += 5;
             }
 
@@ -1525,20 +1527,33 @@ class SharePointService
 
                 $driveId = $resource['parentReference']['driveId'] ?? '';
 
+                $rawTitle = $resource['title'] ?? $resource['name'] ?? $hit['summary'] ?? '';
+                $rawTitle = $this->cleanSearchMarkup($rawTitle);
+
+                $rawDescription = $resource['description'] ?? $hit['summary'] ?? '';
+                $rawDescription = $this->cleanSearchMarkup($rawDescription);
+
+                $rawSummary = $hit['summary'] ?? '';
+                $rawSummary = $this->cleanSearchMarkup($rawSummary);
+
+                $webUrl = $this->encodeWebUrl($resource['webUrl'] ?? '');
+
+                $siteUrl = $this->extractSiteUrl($resource['webUrl'] ?? '');
+
                 $results[] = [
                     'type' => $resultType,
                     'id' => $resource['id'] ?? '',
                     'driveId' => $driveId,
-                    'title' => $resource['title'] ?? $resource['name'] ?? $hit['summary'] ?? '',
+                    'title' => $rawTitle,
                     'name' => $resource['name'] ?? '',
-                    'webUrl' => $resource['webUrl'] ?? '',
-                    'description' => $resource['description'] ?? $hit['summary'] ?? '',
+                    'webUrl' => $webUrl,
+                    'description' => $rawDescription,
                     'createdDateTime' => $resource['createdDateTime'] ?? '',
                     'lastModifiedDateTime' => $resource['lastModifiedDateTime'] ?? '',
                     'siteId' => $extractedSiteId,
                     'siteName' => $resource['displayName'] ?? '',
-                    'siteUrl' => $resource['webUrl'] ?? '',
-                    'summary' => $hit['summary'] ?? '',
+                    'siteUrl' => $siteUrl,
+                    'summary' => $rawSummary,
                     'resourceType' => $odataType,
                     'parentReference' => $resource['parentReference'] ?? null
                 ];
@@ -1546,6 +1561,91 @@ class SharePointService
         }
 
         return $results;
+    }
+
+    /**
+     * URL-encode the path portion of a SharePoint webUrl.
+     *
+     * Microsoft Graph API returns webUrl with raw spaces (e.g. "Freigegebene Dokumente").
+     * This encodes path segments so URLs are valid clickable links.
+     */
+    private function encodeWebUrl(string $url): string
+    {
+        if (empty($url)) {
+            return '';
+        }
+
+        $parsed = parse_url($url);
+        if ($parsed === false || !isset($parsed['scheme'], $parsed['host'])) {
+            return $url;
+        }
+
+        $encodedPath = '';
+        if (isset($parsed['path'])) {
+            $segments = explode('/', $parsed['path']);
+            $encodedSegments = array_map(fn(string $segment): string => rawurlencode(rawurldecode($segment)), $segments);
+            $encodedPath = implode('/', $encodedSegments);
+        }
+
+        $result = $parsed['scheme'] . '://' . $parsed['host'];
+        $result .= $encodedPath;
+
+        if (isset($parsed['query'])) {
+            $result .= '?' . $parsed['query'];
+        }
+        if (isset($parsed['fragment'])) {
+            $result .= '#' . $parsed['fragment'];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Strip Microsoft Search API highlight markup from text.
+     *
+     * The Graph Search API returns snippets with tags like <c0>term</c0>, <ddd/>,
+     * and HTML entities that are not useful for display or relevance scoring.
+     */
+    private function cleanSearchMarkup(string $text): string
+    {
+        if (empty($text)) {
+            return '';
+        }
+
+        // Remove highlight tags: <c0>...</c0>, <c1>...</c1>, etc.
+        $text = (string) preg_replace('/<\/?c\d+>/', '', $text);
+        // Remove truncation markers: <ddd/>
+        $text = str_replace('<ddd/>', '...', $text);
+        // Collapse multiple whitespace
+        $text = (string) preg_replace('/\s+/', ' ', $text);
+
+        return trim($text);
+    }
+
+    /**
+     * Extract the SharePoint site URL from an item webUrl.
+     *
+     * E.g. "https://tenant.sharepoint.com/sites/MySite/Docs/file.docx"
+     * returns "https://tenant.sharepoint.com/sites/MySite"
+     */
+    private function extractSiteUrl(string $webUrl): string
+    {
+        if (empty($webUrl)) {
+            return '';
+        }
+
+        // Match .sharepoint.com/sites/SiteName or .sharepoint.com/personal/UserName
+        if (preg_match('#(https://[^/]+\.sharepoint\.com/(?:sites|personal)/[^/]+)#i', $webUrl, $matches)) {
+            return $matches[1];
+        }
+
+        // Fallback: return just the host
+        $parsed = parse_url($webUrl);
+        if ($parsed !== false && isset($parsed['scheme'], $parsed['host'])) {
+            return $parsed['scheme'] . '://' . $parsed['host'];
+        }
+
+        return '';
     }
 
     /**
