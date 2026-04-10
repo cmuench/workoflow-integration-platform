@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased] - 2026-04-10
+
+### Added
+- **Knowledge Base admin page** — New page under Workspace to manage your organisation's knowledge base. Upload documents (PDF, DOCX, TXT, MD), add text snippets, and crawl websites via sitemap URL
+- **Tabbed interface** — Upload, Sitemap, and Snippet tabs for different content ingestion methods
+- **Upload Pipeline table** — Track document processing status (pending, processing, completed, failed) with auto-refresh and pagination
+- **Indexed Domains table** — View and manage crawled web content grouped by domain, with bulk domain delete
+- **Knowledge Base Sources table** — See all indexed sources with chunk counts directly from the vector store
+- **Navigation** — Added Knowledge Base link to the Workspace dropdown menu
+- **Translations** — Full English and German translations for all Knowledge Base UI elements
+
 ## 2026-04-10
 
 ### Added

@@ -820,3 +820,60 @@ prompt:
     hint_combine: "Tipp: Parameter kombinieren, z.B. ?scope=organisation&category=developer&skill=jira&platform=chatgpt"
     no_token: Sie müssen zuerst einen API-Token generieren, um Prompts per API abzurufen.
     generate_token: Token im Profil generieren
+
+kb:
+  title: Wissensdatenbank
+  explanation: Laden Sie Dokumente hoch, fügen Sie Textbausteine hinzu oder crawlen Sie Webseiten, um die Wissensdatenbank Ihrer Organisation aufzubauen. Der KI-Agent kann dieses Wissen in Gesprächen durchsuchen.
+  tab:
+    upload: Hochladen
+    sitemap: Sitemap
+    snippet: Textbaustein
+  upload:
+    drag_drop: Dateien hier ablegen
+    select_files: Dateien auswählen
+    allowed_types: Erlaubte Dateitypen
+    max_size: Maximale Dateigröße
+    upload: Hochladen
+  sitemap:
+    url_label: Sitemap-URL
+    start_crawl: Crawl starten
+    active_crawls: Aktive Crawls
+    no_crawls: Noch keine Crawl-Aufträge.
+    url: Sitemap-URL
+    progress: Fortschritt
+    started: Gestartet
+    delete_confirm: Diesen Crawl-Auftrag und alle zugehörigen Daten löschen?
+  snippet:
+    title_label: Titel
+    title_placeholder: Titel für diesen Textbaustein eingeben
+    text_label: Inhalt
+    text_placeholder: Textinhalt eingeben, der zur Wissensdatenbank hinzugefügt werden soll...
+    save: Textbaustein speichern
+  documents:
+    title: Upload-Pipeline
+    filename: Dateiname
+    source_type: Quelle
+    status: Status
+    chunks: Chunks
+    date: Datum
+    empty: Noch keine Dokumente hochgeladen.
+    loading: Dokumente werden geladen...
+    delete_confirm: Dieses Dokument und seine indexierten Daten löschen?
+  domains:
+    title: Indexierte Domains
+    domain: Domain
+    pages: Seiten
+    chunks: Gesamt-Chunks
+    empty: Noch keine gecrawlten Domains.
+    loading: Domains werden geladen...
+    delete_confirm: "Alle {count} Seiten von {domain} löschen?"
+  sources:
+    title: Wissensdatenbank-Quellen
+    source_file: Quelldatei
+    type: Dokumenttyp
+    source_type: Quelltyp
+    chunks: Chunks
+    indexed_at: Indexiert am
+    empty: Noch keine Quellen indexiert.
+    loading: Quellen werden geladen...
+    refresh: Aktualisieren

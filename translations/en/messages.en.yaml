@@ -816,3 +816,60 @@ prompt:
     hint_combine: "Tip: Combine parameters, e.g. ?scope=organisation&category=developer&skill=jira&platform=chatgpt"
     no_token: You need to generate an API token first to access prompts via API.
     generate_token: Generate Token in Profile
+
+kb:
+  title: Knowledge Base
+  explanation: Upload documents, add text snippets, or crawl websites to build your organisation's knowledge base. The AI agent can search this knowledge during conversations.
+  tab:
+    upload: Upload
+    sitemap: Sitemap
+    snippet: Snippet
+  upload:
+    drag_drop: Drag and drop files here
+    select_files: Select Files
+    allowed_types: Allowed types
+    max_size: Max file size
+    upload: Upload
+  sitemap:
+    url_label: Sitemap URL
+    start_crawl: Start Crawl
+    active_crawls: Active Crawls
+    no_crawls: No crawl jobs yet.
+    url: Sitemap URL
+    progress: Progress
+    started: Started
+    delete_confirm: Delete this crawl job and all associated data?
+  snippet:
+    title_label: Title
+    title_placeholder: Enter a title for this snippet
+    text_label: Content
+    text_placeholder: Enter text content to add to the knowledge base...
+    save: Save Snippet
+  documents:
+    title: Upload Pipeline
+    filename: Filename
+    source_type: Source
+    status: Status
+    chunks: Chunks
+    date: Date
+    empty: No documents uploaded yet.
+    loading: Loading documents...
+    delete_confirm: Delete this document and its indexed data?
+  domains:
+    title: Indexed Domains
+    domain: Domain
+    pages: Pages
+    chunks: Total Chunks
+    empty: No crawled domains yet.
+    loading: Loading domains...
+    delete_confirm: "Delete all {count} pages from {domain}?"
+  sources:
+    title: Knowledge Base Sources
+    source_file: Source File
+    type: Document Type
+    source_type: Source Type
+    chunks: Chunks
+    indexed_at: Indexed At
+    empty: No sources indexed yet.
+    loading: Loading sources...
+    refresh: Refresh

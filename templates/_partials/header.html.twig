@@ -117,6 +117,10 @@
                             <i class="fas fa-clock" aria-hidden="true"></i>
                             <span>{{ 'nav.scheduled_tasks'|trans }}</span>
                         </a>
+                        <a href="{{ path('app_knowledge_base') }}" class="dropdown-item">
+                            <i class="fas fa-book" aria-hidden="true"></i>
+                            <span>{{ 'kb.title'|trans }}</span>
+                        </a>
                         {% if app.user.isAdmin() %}
                             <a href="{{ path('app_tenant') }}" class="dropdown-item">
                                 <i class="fas fa-comments" aria-hidden="true"></i>

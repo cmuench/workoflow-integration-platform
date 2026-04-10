@@ -1,0 +1,576 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'kb.title'|trans }} - Workoflow{% endblock %}
+
+{% block body %}
+<div class="dashboard-page files-page">
+    <div class="dashboard-container">
+        <div class="files-header">
+            <div class="files-header-top">
+                <h1>{{ 'kb.title'|trans }}</h1>
+            </div>
+            <div class="files-explanation">
+                <p>{{ 'kb.explanation'|trans }}</p>
+            </div>
+        </div>
+
+        {# Tab Navigation #}
+        <div class="kb-tabs">
+            <button class="kb-tab active" data-tab="upload" onclick="switchTab('upload')">
+                <i class="fas fa-upload"></i> {{ 'kb.tab.upload'|trans }}
+            </button>
+            <button class="kb-tab" data-tab="sitemap" onclick="switchTab('sitemap')">
+                <i class="fas fa-sitemap"></i> {{ 'kb.tab.sitemap'|trans }}
+            </button>
+            <button class="kb-tab" data-tab="snippet" onclick="switchTab('snippet')">
+                <i class="fas fa-file-alt"></i> {{ 'kb.tab.snippet'|trans }}
+            </button>
+        </div>
+
+        {# Upload Tab #}
+        <div class="kb-tab-content active" id="tab-upload">
+            <div id="dropzone" class="dropzone">
+                <div class="dropzone-content">
+                    <p>{{ 'kb.upload.drag_drop'|trans }}</p>
+                    <input type="file" id="fileInput" multiple accept=".pdf,.docx,.txt,.md" class="hidden">
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">
+                        {{ 'kb.upload.select_files'|trans }}
+                    </button>
+                </div>
+            </div>
+            <div id="fileList" class="file-list"></div>
+            <div class="file-info">
+                <p>{{ 'kb.upload.allowed_types'|trans }}: PDF, DOCX, TXT, MD</p>
+                <p>{{ 'kb.upload.max_size'|trans }}: 50 MB</p>
+            </div>
+            <div class="kb-section">
+                <button type="button" class="btn btn-primary" id="uploadBtn" disabled>
+                    <span class="spinner hidden" id="uploadSpinner"></span>
+                    {{ 'kb.upload.upload'|trans }}
+                </button>
+            </div>
+        </div>
+
+        {# Sitemap Tab #}
+        <div class="kb-tab-content" id="tab-sitemap">
+            <div class="form-group">
+                <label for="sitemapUrl">{{ 'kb.sitemap.url_label'|trans }}</label>
+                <div class="kb-sitemap-row">
+                    <input type="url" id="sitemapUrl" class="form-control" placeholder="https://example.com/sitemap.xml">
+                    <button type="button" class="btn btn-primary" id="startCrawlBtn" onclick="startCrawl()">
+                        <span class="spinner hidden" id="crawlSpinner"></span>
+                        {{ 'kb.sitemap.start_crawl'|trans }}
+                    </button>
+                </div>
+            </div>
+
+            <div id="crawlJobsContainer" class="kb-section">
+                <h3>{{ 'kb.sitemap.active_crawls'|trans }}</h3>
+                <div id="crawlJobsList"></div>
+            </div>
+        </div>
+
+        {# Snippet Tab #}
+        <div class="kb-tab-content" id="tab-snippet">
+            <div class="form-group">
+                <label for="snippetTitle">{{ 'kb.snippet.title_label'|trans }}</label>
+                <input type="text" id="snippetTitle" class="form-control" placeholder="{{ 'kb.snippet.title_placeholder'|trans }}">
+            </div>
+            <div class="form-group">
+                <label for="snippetText">{{ 'kb.snippet.text_label'|trans }}</label>
+                <textarea id="snippetText" class="form-control" rows="8" placeholder="{{ 'kb.snippet.text_placeholder'|trans }}"></textarea>
+            </div>
+            <button type="button" class="btn btn-primary" id="saveSnippetBtn" disabled onclick="saveSnippet()">
+                <span class="spinner hidden" id="snippetSpinner"></span>
+                {{ 'kb.snippet.save'|trans }}
+            </button>
+        </div>
+
+        {# Upload Pipeline Table #}
+        <div class="kb-section" class="kb-section">
+            <div class="kb-section-header">
+                <h2>{{ 'kb.documents.title'|trans }}</h2>
+            </div>
+            <div id="documentsTable">
+                <div class="empty-state"><p>{{ 'kb.documents.loading'|trans }}</p></div>
+            </div>
+            <div id="documentsPagination" class="kb-pagination"></div>
+        </div>
+
+        {# Indexed Domains Table #}
+        <div class="kb-section" class="kb-section">
+            <div class="kb-section-header">
+                <h2>{{ 'kb.domains.title'|trans }}</h2>
+            </div>
+            <div id="domainsTable">
+                <div class="empty-state"><p>{{ 'kb.domains.loading'|trans }}</p></div>
+            </div>
+        </div>
+
+        {# Knowledge Base Sources Table #}
+        <div class="kb-section" class="kb-section">
+            <div class="kb-section-header">
+                <h2>{{ 'kb.sources.title'|trans }}</h2>
+                <button type="button" class="btn btn-small btn-secondary" onclick="loadSources()">
+                    <i class="fas fa-sync-alt"></i> {{ 'kb.sources.refresh'|trans }}
+                </button>
+            </div>
+            <div id="sourcesTable">
+                <div class="empty-state"><p>{{ 'kb.sources.loading'|trans }}</p></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Tabs */
+.kb-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--border-color);
+}
+.kb-tab {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: var(--text-sm);
+    font-family: var(--font-sans);
+    color: var(--text-muted);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.2s;
+}
+.kb-tab:hover {
+    color: var(--text-primary);
+}
+.kb-tab.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+    font-weight: 600;
+}
+.kb-tab i {
+    margin-right: 0.5rem;
+}
+
+/* Tab content */
+.kb-tab-content {
+    display: none;
+    padding: 1.5rem 0;
+}
+.kb-tab-content.active {
+    display: block;
+}
+
+/* Section headers */
+.kb-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.kb-section-header h2 {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+/* Pagination */
+.kb-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+.kb-pagination button {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    transition: all 0.2s;
+}
+.kb-pagination button:hover {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+}
+.kb-pagination button.active {
+    background: var(--color-primary);
+    color: #fff;
+    border-color: var(--color-primary);
+}
+
+/* Status badges — dark-theme friendly */
+.status-badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+.status-pending   { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.status-processing { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.status-completed  { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.status-failed     { background: rgba(239, 68, 68, 0.15);  color: #ef4444; }
+.status-discovering { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
+.status-crawling   { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.status-upload     { background: rgba(59, 130, 246, 0.1);  color: #60a5fa; }
+.status-snippet    { background: rgba(168, 85, 247, 0.1);  color: #c084fc; }
+.status-web_crawl  { background: rgba(16, 185, 129, 0.1);  color: #6ee7b7; }
+
+/* Domain rows */
+.domain-row { cursor: pointer; }
+.domain-row:hover { background: var(--bg-card-hover); }
+.domain-pages { display: none; }
+.domain-pages.expanded { display: table-row; }
+.domain-toggle { transition: transform 0.2s; display: inline-block; }
+.domain-toggle.expanded { transform: rotate(90deg); }
+
+/* Form controls — match platform dark theme (scoped like .integration-form-container) */
+.files-page .form-control {
+    background: var(--input-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    padding: var(--space-sm) var(--space-md);
+    transition: var(--transition);
+    width: 100%;
+}
+.files-page .form-control::placeholder {
+    color: var(--text-muted);
+}
+.files-page .form-control:focus {
+    border-color: var(--color-primary);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.15);
+}
+.files-page textarea.form-control {
+    min-height: 180px;
+    resize: vertical;
+}
+.files-page .form-group {
+    margin-bottom: var(--space-lg);
+}
+.files-page .form-group label {
+    display: block;
+    font-weight: 600;
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-sm);
+    color: var(--text-primary);
+}
+
+/* Sections */
+.kb-section {
+    margin-top: 1.5rem;
+}
+
+/* Sitemap input row */
+.kb-sitemap-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+}
+.kb-sitemap-row .form-control {
+    flex: 1;
+}
+</style>
+
+<script>
+const API_BASE = '{{ path('app_knowledge_base') }}api';
+let currentPage = 1;
+let refreshInterval = null;
+let crawlRefreshInterval = null;
+
+// Tab switching
+function switchTab(tab) {
+    document.querySelectorAll('.kb-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.kb-tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelector(`.kb-tab[data-tab="${tab}"]`).classList.add('active');
+    document.getElementById(`tab-${tab}`).classList.add('active');
+}
+
+// File upload
+let filesToUpload = [];
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const uploadBtn = document.getElementById('uploadBtn');
+
+dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('dragover'); handleFiles(e.dataTransfer.files); });
+fileInput.addEventListener('change', e => handleFiles(e.target.files));
+
+function handleFiles(files) {
+    filesToUpload = [...filesToUpload, ...Array.from(files)];
+    updateFileList();
+}
+
+function updateFileList() {
+    const list = document.getElementById('fileList');
+    list.innerHTML = '';
+    filesToUpload.forEach((file, i) => {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        item.innerHTML = `<span class="file-name">${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)</span><button type="button" class="remove-file" onclick="removeFile(${i})">×</button>`;
+        list.appendChild(item);
+    });
+    uploadBtn.disabled = filesToUpload.length === 0;
+}
+
+function removeFile(i) { filesToUpload.splice(i, 1); updateFileList(); }
+
+uploadBtn.addEventListener('click', async () => {
+    uploadBtn.disabled = true;
+    document.getElementById('uploadSpinner').classList.remove('hidden');
+    let successCount = 0;
+    for (const file of filesToUpload) {
+        const fd = new FormData();
+        fd.append('file', file);
+        try {
+            const resp = await fetch('{{ path('app_kb_api_upload') }}', { method: 'POST', body: fd });
+            if (resp.ok) successCount++;
+            else { const d = await resp.json(); alert(d.error || 'Upload failed'); }
+        } catch (e) { alert('Upload error: ' + e.message); }
+    }
+    filesToUpload = [];
+    updateFileList();
+    document.getElementById('uploadSpinner').classList.add('hidden');
+    if (successCount > 0) { loadDocuments(); startAutoRefresh(); }
+});
+
+// Snippet
+const snippetText = document.getElementById('snippetText');
+const saveSnippetBtn = document.getElementById('saveSnippetBtn');
+snippetText.addEventListener('input', () => { saveSnippetBtn.disabled = !snippetText.value.trim(); });
+
+async function saveSnippet() {
+    saveSnippetBtn.disabled = true;
+    document.getElementById('snippetSpinner').classList.remove('hidden');
+    try {
+        const resp = await fetch('{{ path('app_kb_api_snippet') }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: document.getElementById('snippetTitle').value.trim(), text: snippetText.value.trim() }),
+        });
+        const data = await resp.json();
+        if (resp.ok) {
+            document.getElementById('snippetTitle').value = '';
+            snippetText.value = '';
+            loadDocuments();
+        } else { alert(data.error || 'Failed to save snippet'); }
+    } catch (e) { alert('Error: ' + e.message); }
+    finally { saveSnippetBtn.disabled = false; document.getElementById('snippetSpinner').classList.add('hidden'); }
+}
+
+// Sitemap crawl
+async function startCrawl() {
+    const url = document.getElementById('sitemapUrl').value.trim();
+    if (!url) return;
+    document.getElementById('crawlSpinner').classList.remove('hidden');
+    try {
+        const resp = await fetch('{{ path('app_kb_api_crawl_start') }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sitemap_url: url }),
+        });
+        const data = await resp.json();
+        if (resp.ok) { document.getElementById('sitemapUrl').value = ''; loadCrawlJobs(); startCrawlRefresh(); }
+        else { alert(data.error || 'Failed to start crawl'); }
+    } catch (e) { alert('Error: ' + e.message); }
+    finally { document.getElementById('crawlSpinner').classList.add('hidden'); }
+}
+
+// Load documents
+async function loadDocuments(page) {
+    if (page) currentPage = page;
+    try {
+        const resp = await fetch(`{{ path('app_kb_api_documents') }}?page=${currentPage}&per_page=25`);
+        const data = await resp.json();
+        renderDocumentsTable(data);
+        renderPagination(data);
+        // Auto-refresh if any docs are pending/processing
+        const hasPending = (data.documents || []).some(d => d.status === 'pending' || d.status === 'processing');
+        if (hasPending) startAutoRefresh();
+        else stopAutoRefresh();
+    } catch (e) { console.error('Failed to load documents:', e); }
+}
+
+function renderDocumentsTable(data) {
+    const docs = data.documents || [];
+    const container = document.getElementById('documentsTable');
+    if (docs.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>{{ "kb.documents.empty"|trans }}</p></div>';
+        return;
+    }
+    let html = '<div class="files-table"><table><thead><tr><th>{{ "kb.documents.filename"|trans }}</th><th>{{ "kb.documents.source_type"|trans }}</th><th>{{ "kb.documents.status"|trans }}</th><th>{{ "kb.documents.chunks"|trans }}</th><th>{{ "kb.documents.date"|trans }}</th><th>{{ "action.actions"|trans }}</th></tr></thead><tbody>';
+    docs.forEach(d => {
+        const statusClass = `status-${d.status}`;
+        html += `<tr>
+            <td class="file-name">${d.filename}</td>
+            <td><span class="status-badge status-${d.source_type}">${d.source_type}</span></td>
+            <td><span class="status-badge ${statusClass}">${d.status}</span>${d.error ? ` <small title="${d.error}" style="color:var(--danger-color);cursor:help;">&#9888;</small>` : ''}</td>
+            <td>${d.chunk_count || 0}</td>
+            <td>${new Date(d.created_at).toLocaleDateString()}</td>
+            <td class="file-actions"><button class="btn btn-small btn-danger" onclick="deleteDocument('${d.id}')">{{ "action.delete"|trans }}</button></td>
+        </tr>`;
+    });
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+}
+
+function renderPagination(data) {
+    const total = data.total || 0;
+    const perPage = data.per_page || 25;
+    const pages = Math.ceil(total / perPage);
+    const container = document.getElementById('documentsPagination');
+    if (pages <= 1) { container.innerHTML = ''; return; }
+    let html = '';
+    for (let i = 1; i <= pages; i++) {
+        html += `<button class="${i === currentPage ? 'active' : ''}" onclick="loadDocuments(${i})">${i}</button>`;
+    }
+    container.innerHTML = html;
+}
+
+async function deleteDocument(docId) {
+    if (!confirm('{{ "kb.documents.delete_confirm"|trans }}')) return;
+    try {
+        await fetch(`{{ path('app_knowledge_base') }}api/documents/${docId}`, { method: 'DELETE' });
+        loadDocuments();
+        loadSources();
+    } catch (e) { alert('Delete failed: ' + e.message); }
+}
+
+// Load domains
+async function loadDomains() {
+    try {
+        const resp = await fetch('{{ path('app_kb_api_domains') }}');
+        const data = await resp.json();
+        renderDomainsTable(data.domains || []);
+    } catch (e) { console.error('Failed to load domains:', e); }
+}
+
+function renderDomainsTable(domains) {
+    const container = document.getElementById('domainsTable');
+    if (domains.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>{{ "kb.domains.empty"|trans }}</p></div>';
+        return;
+    }
+    let html = '<div class="files-table"><table><thead><tr><th></th><th>{{ "kb.domains.domain"|trans }}</th><th>{{ "kb.domains.pages"|trans }}</th><th>{{ "kb.domains.chunks"|trans }}</th><th>{{ "action.actions"|trans }}</th></tr></thead><tbody>';
+    domains.forEach(d => {
+        html += `<tr class="domain-row" onclick="toggleDomain(this)">
+            <td><i class="fas fa-chevron-right domain-toggle"></i></td>
+            <td>${d.domain}</td>
+            <td>${d.page_count}</td>
+            <td>${d.chunk_count}</td>
+            <td class="file-actions"><button class="btn btn-small btn-danger" onclick="event.stopPropagation(); deleteDomain('${d.domain}', ${d.page_count})">{{ "action.delete"|trans }}</button></td>
+        </tr>`;
+    });
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+}
+
+function toggleDomain(row) {
+    const toggle = row.querySelector('.domain-toggle');
+    toggle.classList.toggle('expanded');
+}
+
+async function deleteDomain(domain, pageCount) {
+    if (!confirm(`{{ "kb.domains.delete_confirm"|trans }}`.replace('{domain}', domain).replace('{count}', pageCount))) return;
+    try {
+        await fetch(`{{ path('app_knowledge_base') }}api/domains/${domain}`, { method: 'DELETE' });
+        loadDomains();
+        loadSources();
+    } catch (e) { alert('Delete failed: ' + e.message); }
+}
+
+// Load sources
+async function loadSources() {
+    try {
+        const resp = await fetch('{{ path('app_kb_api_sources') }}');
+        const data = await resp.json();
+        renderSourcesTable(data.sources || []);
+    } catch (e) { console.error('Failed to load sources:', e); }
+}
+
+function renderSourcesTable(sources) {
+    const container = document.getElementById('sourcesTable');
+    if (sources.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>{{ "kb.sources.empty"|trans }}</p></div>';
+        return;
+    }
+    let html = '<div class="files-table"><table><thead><tr><th>{{ "kb.sources.source_file"|trans }}</th><th>{{ "kb.sources.type"|trans }}</th><th>{{ "kb.sources.source_type"|trans }}</th><th>{{ "kb.sources.chunks"|trans }}</th><th>{{ "kb.sources.indexed_at"|trans }}</th></tr></thead><tbody>';
+    sources.forEach(s => {
+        html += `<tr><td>${s.source_file}</td><td>${s.document_type}</td><td>${s.source_type}</td><td>${s.chunk_count}</td><td>${s.indexed_at ? new Date(s.indexed_at).toLocaleDateString() : '-'}</td></tr>`;
+    });
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+}
+
+// Load crawl jobs
+async function loadCrawlJobs() {
+    try {
+        const resp = await fetch('{{ path('app_kb_api_crawl_list') }}');
+        const data = await resp.json();
+        renderCrawlJobs(data.crawl_jobs || []);
+    } catch (e) { console.error('Failed to load crawl jobs:', e); }
+}
+
+function renderCrawlJobs(jobs) {
+    const container = document.getElementById('crawlJobsList');
+    if (jobs.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>{{ "kb.sitemap.no_crawls"|trans }}</p></div>';
+        return;
+    }
+    let html = '<div class="files-table"><table><thead><tr><th>{{ "kb.sitemap.url"|trans }}</th><th>{{ "kb.documents.status"|trans }}</th><th>{{ "kb.sitemap.progress"|trans }}</th><th>{{ "kb.sitemap.started"|trans }}</th><th>{{ "action.actions"|trans }}</th></tr></thead><tbody>';
+    jobs.forEach(j => {
+        const statusClass = `status-${j.status}`;
+        const progress = j.total_urls > 0 ? `${(j.indexed_urls || 0) + (j.failed_urls || 0)}/${j.total_urls}` : '-';
+        html += `<tr>
+            <td class="file-name" title="${j.sitemap_url}">${j.sitemap_url}</td>
+            <td><span class="status-badge ${statusClass}">${j.status}</span></td>
+            <td>${progress}</td>
+            <td>${new Date(j.created_at).toLocaleDateString()}</td>
+            <td class="file-actions"><button class="btn btn-small btn-danger" onclick="deleteCrawlJob('${j.id}')">{{ "action.delete"|trans }}</button></td>
+        </tr>`;
+    });
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+
+    const hasActive = jobs.some(j => ['discovering', 'crawling', 'processing'].includes(j.status));
+    if (hasActive) startCrawlRefresh();
+    else stopCrawlRefresh();
+}
+
+async function deleteCrawlJob(jobId) {
+    if (!confirm('{{ "kb.sitemap.delete_confirm"|trans }}')) return;
+    try {
+        await fetch(`{{ path('app_knowledge_base') }}api/crawl/${jobId}`, { method: 'DELETE' });
+        loadCrawlJobs();
+        loadDomains();
+        loadSources();
+    } catch (e) { alert('Delete failed: ' + e.message); }
+}
+
+// Auto-refresh
+function startAutoRefresh() { if (!refreshInterval) refreshInterval = setInterval(() => loadDocuments(), 5000); }
+function stopAutoRefresh() { if (refreshInterval) { clearInterval(refreshInterval); refreshInterval = null; } }
+function startCrawlRefresh() { if (!crawlRefreshInterval) crawlRefreshInterval = setInterval(() => { loadCrawlJobs(); loadDomains(); }, 5000); }
+function stopCrawlRefresh() { if (crawlRefreshInterval) { clearInterval(crawlRefreshInterval); crawlRefreshInterval = null; } }
+
+// Initial load
+document.addEventListener('DOMContentLoaded', () => {
+    loadDocuments();
+    loadDomains();
+    loadSources();
+    loadCrawlJobs();
+});
+</script>
+{% endblock %}

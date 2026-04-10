@@ -57,6 +57,11 @@ services:
             $apiAuthUser: '%app.api_auth_user%'
             $apiAuthPassword: '%app.api_auth_password%'
 
+    App\Service\KnowledgeBaseService:
+        arguments:
+            $apiAuthUser: '%app.api_auth_user%'
+            $apiAuthPassword: '%app.api_auth_password%'
+
     App\Security\TestAuthenticator:
         arguments:
             $environment: '%kernel.environment%'
