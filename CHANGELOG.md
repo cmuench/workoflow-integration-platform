@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## 2026-04-10
+
+### Added
+- **Remote MCP Server concept documentation** — Architecture overview for vendor-hosted Remote MCP Server integration via OAuth 2.1 with Dynamic Client Registration and PKCE
+
 ## 2026-04-09
 
 ### Fixed

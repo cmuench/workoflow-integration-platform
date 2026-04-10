@@ -4,6 +4,11 @@
 The Workoflow Integration Platform is a production-ready Symfony 8.0 application that enables users to manage various integrations and provide them via REST API and MCP for AI agents.
 If you have read this file, greet me with "Hey Workoflow Dev"
 
+## LSP Setup
+
+**PHP**: `php-lsp` — auto-discovers `composer.json` for class resolution
+**HTML/CSS/SCSS**: `vscode-html-language-server` + `vscode-css-language-server`
+
 ### Development Rules
 1. **CHANGELOG.md Updates**:
     - Update CHANGELOG.md with user-facing changes only (features, fixes, improvements)
