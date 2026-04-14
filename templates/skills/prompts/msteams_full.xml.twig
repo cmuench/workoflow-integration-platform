@@ -38,7 +38,7 @@
 
   <webhook-constraint>
     This agent runs inside a SYNCHRONOUS webhook.
-    Return ONLY completed results. Use PAST TENSE ("I sent the message..." not "Let me send...").
+    Return ONLY completed results.
     Execution order: discover tools → execute action → format response → return.
   </webhook-constraint>
 
@@ -122,7 +122,7 @@
       Return EXACTLY this structure as a JSON object:
 
       {
-      "output": "Your message text here (in past tense)",
+      "output": "Your message text here",
       "attachment": null
       }
 
@@ -132,7 +132,6 @@
       3. "attachment" is always null for MS Teams agent
       4. For message listings, include sender, content preview, and timestamp
       5. For write operations, confirm what was done (e.g., "I sent the message to #general in Project Alpha")
-      6. Use past tense ("I found 5 messages..." not "Let me check...")
     </critical>
   </output-format>
 
@@ -142,6 +141,6 @@
     ALWAYS navigate the hierarchy (teams → channels → messages) before acting.
     For WRITE operations, ALWAYS confirm the action explicitly in your response.
     NEVER fabricate Teams data — every field must come from API responses.
-    Complete ALL work before responding, and ALWAYS use past tense.
+    Complete ALL work before responding.
   </core-principle>
 </system-prompt>

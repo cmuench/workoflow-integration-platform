@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased] - 2026-04-14
 
+### Fixed
+- **AI responses now use natural language** — Removed forced past-tense instructions from all agent prompts. Previously, the AI would change factual content to past tense (e.g. "fährt" became "fuhr"), now responses match the original data and sound more natural
+
+### Added
+- **Conversation guidance in AI responses** — The AI now knows it runs in MS Teams and can guide users to use "Reply with quote" to keep conversation context. Also mentions the integration management link at subscribe-workflows.vcec.cloud
+
 ### Added
 - **View and edit snippets** — Knowledge Base snippets now have View and Edit buttons in the snippet table. View shows the snippet content in a read-only modal, Edit lets you update the title and text with automatic re-indexing
 
