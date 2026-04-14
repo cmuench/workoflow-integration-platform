@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased] - 2026-04-14
 
+### Improved
+- **Faster AI response times** — Optimised the main agent's routing prompt so the AI takes less time to start working on your request
+
 ### Fixed
 - **AI responses now use natural language** — Removed forced past-tense instructions from all agent prompts. Previously, the AI would change factual content to past tense (e.g. "fährt" became "fuhr"), now responses match the original data and sound more natural
 
