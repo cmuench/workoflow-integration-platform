@@ -68,3 +68,6 @@ tickets_val_it/
 docs/manual
 docs/manual.zip
 docs/projektron-bcs-auth-requirement-VII-803.md
+
+# Claude Code project-local config
+.claude/
