@@ -864,6 +864,7 @@ kb:
     date: Date
     empty: No documents uploaded yet.
     loading: Loading documents...
+    uploading: Uploading...
     delete_confirm: Delete this document and its indexed data?
   domains:
     title: Indexed Domains

@@ -868,6 +868,7 @@ kb:
     date: Datum
     empty: Noch keine Dokumente hochgeladen.
     loading: Dokumente werden geladen...
+    uploading: Wird hochgeladen...
     delete_confirm: Dieses Dokument und seine indexierten Daten löschen?
   domains:
     title: Indexierte Domains

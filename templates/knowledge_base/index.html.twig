@@ -295,6 +295,13 @@
 .status-processing { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
 .status-completed  { background: rgba(16, 185, 129, 0.15); color: #10b981; }
 .status-failed     { background: rgba(239, 68, 68, 0.15);  color: #ef4444; }
+.status-uploading  { background: rgba(34, 211, 238, 0.15); color: #22d3ee; display: inline-flex; align-items: center; gap: 0.4rem; }
+.status-uploading .badge-spinner {
+    display: inline-block; width: 10px; height: 10px;
+    border: 1.5px solid rgba(34, 211, 238, 0.3); border-top-color: #22d3ee;
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+}
+.row-uploading { opacity: 0.85; }
 .status-discovering { background: rgba(168, 85, 247, 0.15); color: #a855f7; }
 .status-crawling   { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
 .status-upload     { background: rgba(59, 130, 246, 0.1);  color: #60a5fa; }
@@ -395,6 +402,8 @@ function switchTab(tab) {
 
 // File upload
 let filesToUpload = [];
+let uploadingPlaceholders = []; // {tempId, filename} — optimistic rows shown while POST is in-flight
+let placeholderCounter = 0;
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('fileInput');
 const uploadBtn = document.getElementById('uploadBtn');
@@ -426,20 +435,49 @@ function removeFile(i) { filesToUpload.splice(i, 1); updateFileList(); }
 uploadBtn.addEventListener('click', async () => {
     uploadBtn.disabled = true;
     document.getElementById('uploadSpinner').classList.remove('hidden');
+
+    // Snapshot the queue and clear the staging list immediately so the user
+    // sees the file move from "ready to upload" to "uploading" right away
+    const filesNow = filesToUpload.slice();
+    filesToUpload = [];
+    updateFileList();
+
+    // Render an optimistic placeholder row per file before any network round-trip
+    const placeholders = filesNow.map(f => ({
+        tempId: `placeholder_${++placeholderCounter}`,
+        filename: f.name,
+    }));
+    uploadingPlaceholders.push(...placeholders);
+    if (activeTab !== 'upload') switchTab('upload');
+    renderFilteredDocuments('upload', 'documentsTable-upload');
+
     let successCount = 0;
-    for (const file of filesToUpload) {
+    for (let i = 0; i < filesNow.length; i++) {
+        const file = filesNow[i];
+        const placeholder = placeholders[i];
         const fd = new FormData();
         fd.append('file', file);
         try {
             const resp = await fetch('{{ path('app_kb_api_upload') }}', { method: 'POST', body: fd });
-            if (resp.ok) successCount++;
-            else { const d = await resp.json(); alert(d.error || 'Upload failed'); }
-        } catch (e) { alert('Upload error: ' + e.message); }
+            // Drop this placeholder regardless of success — server is now the source of truth
+            uploadingPlaceholders = uploadingPlaceholders.filter(p => p.tempId !== placeholder.tempId);
+            if (resp.ok) {
+                successCount++;
+                await loadDocuments(); // pulls in the new pending/processing row
+            } else {
+                const d = await resp.json();
+                alert(d.error || 'Upload failed');
+                renderFilteredDocuments('upload', 'documentsTable-upload');
+            }
+        } catch (e) {
+            uploadingPlaceholders = uploadingPlaceholders.filter(p => p.tempId !== placeholder.tempId);
+            alert('Upload error: ' + e.message);
+            renderFilteredDocuments('upload', 'documentsTable-upload');
+        }
     }
-    filesToUpload = [];
-    updateFileList();
     document.getElementById('uploadSpinner').classList.add('hidden');
-    if (successCount > 0) { loadDocuments(); startAutoRefresh(); }
+    uploadBtn.disabled = filesToUpload.length === 0;
+    if (successCount > 0) startAutoRefresh();
 });
 
 // Snippet
@@ -506,11 +544,22 @@ function renderFilteredDocuments(sourceType, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
     const docs = allDocuments.filter(d => d.source_type === sourceType);
-    if (docs.length === 0) {
+    const placeholders = sourceType === 'upload' ? uploadingPlaceholders : [];
+    if (docs.length === 0 && placeholders.length === 0) {
         container.innerHTML = '<div class="empty-state"><p>{{ "kb.documents.empty"|trans }}</p></div>';
         return;
     }
     let html = '<div class="files-table"><table><thead><tr><th>{{ "kb.documents.filename"|trans }}</th><th>{{ "kb.documents.status"|trans }}</th><th>{{ "kb.documents.chunks"|trans }}</th><th>{{ "kb.documents.date"|trans }}</th><th>{{ "action.actions"|trans }}</th></tr></thead><tbody>';
+    // Placeholder rows for files currently being uploaded (no doc_id yet)
+    placeholders.forEach(p => {
+        html += `<tr class="row-uploading">
+            <td class="file-name">${p.filename}</td>
+            <td><span class="status-badge status-uploading"><span class="badge-spinner"></span>{{ "kb.documents.uploading"|trans }}</span></td>
+            <td>—</td>
+            <td>${new Date().toLocaleDateString()}</td>
+            <td class="file-actions">—</td>
+        </tr>`;
+    });
     docs.forEach(d => {
         const statusClass = `status-${d.status}`;
         html += `<tr>

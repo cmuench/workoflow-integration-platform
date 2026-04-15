@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased] - 2026-04-15
+
+### Improved
+- **Visible feedback while uploading Knowledge Base files** — Files now appear instantly in the Upload Pipeline with an "Uploading…" status as soon as you click Upload, instead of waiting until the upload finishes. Each file refreshes individually so you see progress as it moves through upload → pending → processing → completed.
+
 ## [Unreleased] - 2026-04-14
 
 ### Improved
