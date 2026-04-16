@@ -42,6 +42,13 @@
                 </div>
             </div>
             <div id="fileList" class="file-list"></div>
+            <div class="form-group" id="documentTypeGroup" style="display:none; margin-top: var(--space-sm);">
+                <label for="documentType">{{ 'kb.upload.document_type'|trans }}</label>
+                <select id="documentType" class="form-control">
+                    <option value="general">{{ 'kb.upload.type_general'|trans }}</option>
+                    <option value="project_knowledge">{{ 'kb.upload.type_project_knowledge'|trans }}</option>
+                </select>
+            </div>
             <div class="file-info">
                 <p>{{ 'kb.upload.allowed_types'|trans }}: PDF, DOCX, TXT, MD</p>
                 <p>{{ 'kb.upload.max_size'|trans }}: 50 MB</p>
@@ -428,6 +435,7 @@ function updateFileList() {
         list.appendChild(item);
     });
     uploadBtn.disabled = filesToUpload.length === 0;
+    document.getElementById('documentTypeGroup').style.display = filesToUpload.length > 0 ? 'block' : 'none';
 }
 
 function removeFile(i) { filesToUpload.splice(i, 1); updateFileList(); }
@@ -441,6 +449,8 @@ uploadBtn.addEventListener('click', async () => {
     const filesNow = filesToUpload.slice();
     filesToUpload = [];
     updateFileList();
+
+    const documentType = document.getElementById('documentType').value;
 
     // Render an optimistic placeholder row per file before any network round-trip
     const placeholders = filesNow.map(f => ({
@@ -457,6 +467,7 @@ uploadBtn.addEventListener('click', async () => {
         const placeholder = placeholders[i];
         const fd = new FormData();
         fd.append('file', file);
+        fd.append('document_type', documentType);
         try {
             const resp = await fetch('{{ path('app_kb_api_upload') }}', { method: 'POST', body: fd });
             // Drop this placeholder regardless of success — server is now the source of truth

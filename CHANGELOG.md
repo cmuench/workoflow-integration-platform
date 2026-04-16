@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased] - 2026-04-16
 
 ### Added
+- **Document type selection for Knowledge Base uploads** — When uploading files, you can now choose a document type ("General" or "Project Knowledge") so uploaded content is categorised for better search results
 - **Download uploaded Knowledge Base files** — Completed uploads now have a Download button so you can retrieve the original file (PDF, DOCX, TXT, MD) directly from the browser
 
 ## [Unreleased] - 2026-04-15

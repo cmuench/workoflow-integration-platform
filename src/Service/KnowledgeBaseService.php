@@ -43,7 +43,7 @@ class KnowledgeBaseService
         ]);
     }
 
-    public function uploadDocument(Organisation $organisation, string $filePath, string $filename, string $uploadedBy): array
+    public function uploadDocument(Organisation $organisation, string $filePath, string $filename, string $uploadedBy, string $documentType = 'general'): array
     {
         $baseUrl = $this->getBaseUrl($organisation);
         if (!$baseUrl) {
@@ -54,6 +54,7 @@ class KnowledgeBaseService
             $formData = new FormDataPart([
                 'org_uuid' => $organisation->getUuid(),
                 'uploaded_by' => $uploadedBy,
+                'document_type' => $documentType,
                 'file' => DataPart::fromPath($filePath, $filename),
             ]);
 

@@ -842,6 +842,9 @@ kb:
     allowed_types: Erlaubte Dateitypen
     max_size: Maximale Dateigröße
     upload: Hochladen
+    document_type: Dokumenttyp
+    type_general: Allgemein
+    type_project_knowledge: Projektwissen
   sitemap:
     url_label: Sitemap-URL
     start_crawl: Crawl starten

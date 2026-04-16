@@ -100,11 +100,14 @@ class KnowledgeBaseController extends AbstractController
             return new JsonResponse(['error' => 'No file provided'], 400);
         }
 
+        $documentType = $request->request->get('document_type', 'general');
+
         $result = $this->kbService->uploadDocument(
             $organisation,
             $file->getPathname(),
             $file->getClientOriginalName(),
-            (string) $user->getId()
+            (string) $user->getId(),
+            $documentType
         );
 
         $statusCode = isset($result['error']) ? 400 : 202;
