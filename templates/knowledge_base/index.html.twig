@@ -567,7 +567,7 @@ function renderFilteredDocuments(sourceType, containerId) {
             <td><span class="status-badge ${statusClass}">${d.status}</span>${d.error ? ` <small title="${d.error}" style="color:var(--danger-color);cursor:help;">&#9888;</small>` : ''}</td>
             <td>${d.chunk_count || 0}</td>
             <td>${new Date(d.created_at).toLocaleDateString()}</td>
-            <td class="file-actions">${sourceType === 'snippet' ? `<button class="btn btn-small btn-secondary" onclick="viewSnippet('${d.id}')">{{ "action.view"|trans }}</button> <button class="btn btn-small btn-primary" onclick="editSnippet('${d.id}')">{{ "action.edit"|trans }}</button> ` : ''}<button class="btn btn-small btn-danger" onclick="deleteDocument('${d.id}')">{{ "action.delete"|trans }}</button></td>
+            <td class="file-actions">${sourceType === 'upload' && d.status === 'completed' ? `<a class="btn btn-small btn-secondary" href="${API_BASE}/documents/${d.id}/download">{{ "action.download"|trans }}</a> ` : ''}${sourceType === 'snippet' ? `<button class="btn btn-small btn-secondary" onclick="viewSnippet('${d.id}')">{{ "action.view"|trans }}</button> <button class="btn btn-small btn-primary" onclick="editSnippet('${d.id}')">{{ "action.edit"|trans }}</button> ` : ''}<button class="btn btn-small btn-danger" onclick="deleteDocument('${d.id}')">{{ "action.delete"|trans }}</button></td>
         </tr>`;
     });
     html += '</tbody></table></div>';

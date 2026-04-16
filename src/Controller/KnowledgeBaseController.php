@@ -63,6 +63,26 @@ class KnowledgeBaseController extends AbstractController
         return new JsonResponse($result);
     }
 
+    #[Route('/api/documents/{docId}/download', name: 'app_kb_api_document_download', methods: ['GET'])]
+    public function apiDownloadDocument(string $docId, Request $request): Response
+    {
+        $organisation = $this->getOrganisation($request);
+        if (!$organisation) {
+            return new JsonResponse(['error' => 'No organisation'], 400);
+        }
+
+        $result = $this->kbService->downloadDocument($organisation, $docId);
+        if (isset($result['error'])) {
+            return new JsonResponse(['error' => $result['error']], 404);
+        }
+
+        $response = new Response($result['content']);
+        $response->headers->set('Content-Type', $result['content_type']);
+        $response->headers->set('Content-Disposition', sprintf('attachment; filename="%s"', $result['filename']));
+
+        return $response;
+    }
+
     #[Route('/api/upload', name: 'app_kb_api_upload', methods: ['POST'])]
     public function apiUpload(Request $request): JsonResponse
     {

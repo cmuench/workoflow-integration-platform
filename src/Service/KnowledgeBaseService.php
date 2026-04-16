@@ -66,6 +66,37 @@ class KnowledgeBaseService
         }
     }
 
+    public function downloadDocument(Organisation $organisation, string $docId): array
+    {
+        $baseUrl = $this->getBaseUrl($organisation);
+        if (!$baseUrl) {
+            return ['error' => 'Orchestrator URL not configured'];
+        }
+
+        try {
+            $response = $this->httpClient->request('GET', $baseUrl . "/api/kb/documents/{$docId}/download", [
+                'auth_basic' => [$this->apiAuthUser, $this->apiAuthPassword],
+                'timeout' => 30,
+            ]);
+
+            $contentDisposition = $response->getHeaders()['content-disposition'][0] ?? '';
+            $contentType = $response->getHeaders()['content-type'][0] ?? 'application/octet-stream';
+            $filename = 'document';
+            if (preg_match('/filename="?([^";\s]+)"?/', $contentDisposition, $m)) {
+                $filename = $m[1];
+            }
+
+            return [
+                'content' => $response->getContent(),
+                'filename' => $filename,
+                'content_type' => $contentType,
+            ];
+        } catch (\Throwable $e) {
+            $this->logger->error('KB download failed', ['error' => $e->getMessage(), 'docId' => $docId]);
+            return ['error' => $e->getMessage()];
+        }
+    }
+
     public function addSnippet(Organisation $organisation, string $title, string $text, string $uploadedBy): array
     {
         return $this->request($organisation, 'POST', '/api/kb/snippet', [
