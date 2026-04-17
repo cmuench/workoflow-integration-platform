@@ -57,10 +57,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - **Remote MCP Server concept documentation** — Architecture overview for vendor-hosted Remote MCP Server integration via OAuth 2.1 with Dynamic Client Registration and PKCE
 
-## 2026-04-09
+## 2026-04-17
 
 ### Changed
 - **Setup script now prefers modern Docker Compose syntax** — Running `./setup.sh` now uses `docker compose` by default and automatically falls back to `docker-compose` on systems that still use the legacy command. This makes first-time setup more reliable across different Docker installations.
+
+## 2026-04-09
 
 ### Fixed
 - **Orchestrator tool names invalid for MCP clients** — Orchestrator tools (employee_search, employee_profile, web_search, web_read) used a dot separator (`orchestrator.employee_search`) which violates the MCP tool name pattern `^[a-zA-Z0-9_-]{1,64}$`. Changed to underscore (`orchestrator_employee_search`). This caused Claude Desktop to show a validation error overlay on startup.
