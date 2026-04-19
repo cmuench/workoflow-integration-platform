@@ -903,6 +903,8 @@ kb:
     search_placeholder: "Caută după numele fișierului..."
     document_type: Tip document
     all_types: Toate tipurile
+    per_page: Pe pagină
+    all: Toate
   bulk:
     delete_selected: Șterge selectate
     clear_selection: Anulează selecția

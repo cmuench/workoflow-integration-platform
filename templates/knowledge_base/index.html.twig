@@ -84,6 +84,16 @@
                                 <option value="project_knowledge">{{ 'kb.upload.type_project_knowledge'|trans }}</option>
                             </select>
                         </div>
+                        <div class="kb-filter-group kb-filter-group-narrow">
+                            <label for="perPageSelect-upload" class="kb-filter-label">{{ 'kb.filter.per_page'|trans|default('Per page') }}</label>
+                            <select id="perPageSelect-upload" class="kb-filter-input" onchange="onPerPageChange(this.value)">
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="200">200</option>
+                                <option value="0">{{ 'kb.filter.all'|trans|default('All') }}</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="kb-bulk-actions" id="bulkActions-upload" style="display:none;">
                         <span class="kb-bulk-count" id="bulkCount-upload">0 {{ 'kb.bulk.selected'|trans|default('selected') }}</span>
@@ -141,6 +151,16 @@
                             <label for="searchInput-web_crawl" class="kb-filter-label">{{ 'kb.filter.search'|trans }}</label>
                             <input type="text" id="searchInput-web_crawl" class="kb-filter-input" placeholder="{{ 'kb.filter.search_placeholder'|trans }}" oninput="onSearchInput('web_crawl')">
                         </div>
+                        <div class="kb-filter-group kb-filter-group-narrow">
+                            <label for="perPageSelect-web_crawl" class="kb-filter-label">{{ 'kb.filter.per_page'|trans|default('Per page') }}</label>
+                            <select id="perPageSelect-web_crawl" class="kb-filter-input" onchange="onPerPageChange(this.value)">
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="200">200</option>
+                                <option value="0">{{ 'kb.filter.all'|trans|default('All') }}</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="kb-bulk-actions" id="bulkActions-web_crawl" style="display:none;">
                         <span class="kb-bulk-count" id="bulkCount-web_crawl">0 {{ 'kb.bulk.selected'|trans|default('selected') }}</span>
@@ -189,6 +209,16 @@
                         <div class="kb-filter-group">
                             <label for="searchInput-snippet" class="kb-filter-label">{{ 'kb.filter.search'|trans }}</label>
                             <input type="text" id="searchInput-snippet" class="kb-filter-input" placeholder="{{ 'kb.filter.search_placeholder'|trans }}" oninput="onSearchInput('snippet')">
+                        </div>
+                        <div class="kb-filter-group kb-filter-group-narrow">
+                            <label for="perPageSelect-snippet" class="kb-filter-label">{{ 'kb.filter.per_page'|trans|default('Per page') }}</label>
+                            <select id="perPageSelect-snippet" class="kb-filter-input" onchange="onPerPageChange(this.value)">
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="200">200</option>
+                                <option value="0">{{ 'kb.filter.all'|trans|default('All') }}</option>
+                            </select>
                         </div>
                     </div>
                     <div class="kb-bulk-actions" id="bulkActions-snippet" style="display:none;">
@@ -464,6 +494,11 @@
     flex-direction: column;
     gap: var(--space-xs, 0.25rem);
 }
+.kb-filter-group-narrow {
+    flex: 0 0 auto;
+    min-width: 100px;
+    max-width: 120px;
+}
 .kb-filter-label {
     font-size: var(--text-sm);
     color: var(--text-secondary);
@@ -544,7 +579,8 @@ let activeTab = 'upload';
 const VALID_TABS = ['upload', 'sitemap', 'snippet', 'sources'];
 
 // Per-tab pagination, selection, search
-const DOCS_PER_PAGE = 20;
+const PER_PAGE_OPTIONS = [20, 50, 100, 200, 0]; // 0 = all
+let docsPerPage = 20;
 const tabPages = { upload: 1, web_crawl: 1, snippet: 1 };
 const tabSelections = { upload: new Set(), web_crawl: new Set(), snippet: new Set() };
 const tabSearchQueries = { upload: '', web_crawl: '', snippet: '' };
@@ -557,7 +593,55 @@ const TAB_EXPLANATIONS = {
     sources: {{ 'kb.tab_explanation.sources'|trans|json_encode|raw }},
 };
 
-// Tab switching with URL hash persistence
+// URL state management
+function updateUrl() {
+    const params = new URLSearchParams();
+    const sourceType = activeTab === 'sitemap' ? 'web_crawl' : activeTab;
+    const page = tabPages[sourceType];
+    if (page && page > 1) params.set('page', page);
+    if (docsPerPage !== 20) params.set('per_page', docsPerPage);
+    if (docTypeFilter !== 'all') params.set('doc_type', docTypeFilter);
+    const search = tabSearchQueries[sourceType];
+    if (search) params.set('search', search);
+    const qs = params.toString();
+    history.replaceState(null, '', `${window.location.pathname}${qs ? '?' + qs : ''}#${activeTab}`);
+}
+
+function restoreFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const hash = window.location.hash.replace('#', '');
+    const tab = VALID_TABS.includes(hash) ? hash : 'upload';
+    const sourceType = tab === 'sitemap' ? 'web_crawl' : tab;
+
+    if (params.has('per_page')) {
+        const pp = parseInt(params.get('per_page'), 10);
+        if (PER_PAGE_OPTIONS.includes(pp)) {
+            docsPerPage = pp;
+            document.querySelectorAll('[id^="perPageSelect-"]').forEach(sel => { sel.value = pp; });
+        }
+    }
+    if (params.has('doc_type')) {
+        const dt = params.get('doc_type');
+        if (['all', 'general', 'project_knowledge'].includes(dt)) {
+            docTypeFilter = dt;
+            const dtEl = document.getElementById('docTypeFilter');
+            if (dtEl) dtEl.value = dt;
+        }
+    }
+    if (params.has('search')) {
+        const q = params.get('search');
+        tabSearchQueries[sourceType] = q;
+        const searchEl = document.getElementById(`searchInput-${sourceType}`);
+        if (searchEl) searchEl.value = q;
+    }
+    if (params.has('page')) {
+        const p = parseInt(params.get('page'), 10);
+        if (p > 0) tabPages[sourceType] = p;
+    }
+    return tab;
+}
+
+// Tab switching with URL persistence
 function switchTab(tab) {
     if (!VALID_TABS.includes(tab)) tab = 'upload';
     activeTab = tab;
@@ -565,7 +649,7 @@ function switchTab(tab) {
     document.querySelectorAll('.kb-tab-content').forEach(c => c.classList.remove('active'));
     document.querySelector(`.kb-tab[data-tab="${tab}"]`).classList.add('active');
     document.getElementById(`tab-${tab}`).classList.add('active');
-    history.replaceState(null, '', '#' + tab);
+    updateUrl();
     document.getElementById('tabExplanation').textContent = TAB_EXPLANATIONS[tab];
 
     // Load tab-specific data
@@ -748,10 +832,12 @@ function renderFilteredDocuments(sourceType, containerId) {
     }
 
     const page = tabPages[sourceType] || 1;
-    const totalPages = Math.ceil(filteredDocs.length / DOCS_PER_PAGE);
+    const showAll = docsPerPage === 0;
+    const perPage = showAll ? filteredDocs.length : docsPerPage;
+    const totalPages = showAll ? 1 : Math.ceil(filteredDocs.length / perPage);
     if (page > totalPages && totalPages > 0) tabPages[sourceType] = totalPages;
-    const start = (tabPages[sourceType] - 1) * DOCS_PER_PAGE;
-    const pageItems = filteredDocs.slice(start, start + DOCS_PER_PAGE);
+    const start = showAll ? 0 : (tabPages[sourceType] - 1) * perPage;
+    const pageItems = showAll ? filteredDocs : filteredDocs.slice(start, start + perPage);
     const selection = tabSelections[sourceType];
     const allVisibleSelected = pageItems.length > 0 && pageItems.every(d => selection.has(d.id));
 
@@ -792,7 +878,9 @@ function renderFilteredDocuments(sourceType, containerId) {
 function renderTabPagination(sourceType, totalItems) {
     const container = document.getElementById(`pagination-${sourceType}`);
     if (!container) return;
-    const pages = Math.ceil(totalItems / DOCS_PER_PAGE);
+    const showAll = docsPerPage === 0;
+    const perPage = showAll ? totalItems : docsPerPage;
+    const pages = showAll ? 1 : Math.ceil(totalItems / perPage);
     const currentPg = tabPages[sourceType] || 1;
 
     if (pages <= 1) {
@@ -800,8 +888,8 @@ function renderTabPagination(sourceType, totalItems) {
         return;
     }
 
-    const from = ((currentPg - 1) * DOCS_PER_PAGE) + 1;
-    const to = Math.min(currentPg * DOCS_PER_PAGE, totalItems);
+    const from = ((currentPg - 1) * perPage) + 1;
+    const to = Math.min(currentPg * perPage, totalItems);
     let html = `<div class="kb-pagination-info">{{ "kb.documents.showing"|trans|default("Showing") }} ${from}–${to} {{ "kb.documents.of"|trans|default("of") }} ${totalItems}</div>`;
     html += '<div class="kb-pagination">';
     html += `<button ${currentPg === 1 ? 'disabled' : ''} onclick="goToPage('${sourceType}', ${currentPg - 1})">‹ {{ "pagination.previous"|trans|default("Prev") }}</button>`;
@@ -826,29 +914,31 @@ function renderTabPagination(sourceType, totalItems) {
 function goToPage(sourceType, page) {
     tabPages[sourceType] = page;
     renderFilteredDocuments(sourceType, `documentsTable-${sourceType}`);
+    updateUrl();
 }
 
 // Selection management
+function getVisiblePageItems(sourceType) {
+    const docs = getFilteredDocs(sourceType);
+    if (docsPerPage === 0) return docs;
+    const start = (tabPages[sourceType] - 1) * docsPerPage;
+    return docs.slice(start, start + docsPerPage);
+}
+
 function toggleDocSelection(sourceType, docId, checked) {
     const sel = tabSelections[sourceType];
     if (checked) sel.add(docId); else sel.delete(docId);
     updateBulkActionsUI(sourceType);
     const selectAllCb = document.querySelector(`#documentsTable-${sourceType} thead .kb-checkbox`);
     if (selectAllCb) {
-        const pageItems = getFilteredDocs(sourceType).slice(
-            (tabPages[sourceType] - 1) * DOCS_PER_PAGE,
-            tabPages[sourceType] * DOCS_PER_PAGE
-        );
+        const pageItems = getVisiblePageItems(sourceType);
         selectAllCb.checked = pageItems.length > 0 && pageItems.every(d => sel.has(d.id));
     }
 }
 
 function toggleSelectAll(sourceType, checked) {
     const sel = tabSelections[sourceType];
-    const pageItems = getFilteredDocs(sourceType).slice(
-        (tabPages[sourceType] - 1) * DOCS_PER_PAGE,
-        tabPages[sourceType] * DOCS_PER_PAGE
-    );
+    const pageItems = getVisiblePageItems(sourceType);
     pageItems.forEach(d => { if (checked) sel.add(d.id); else sel.delete(d.id); });
     renderFilteredDocuments(sourceType, `documentsTable-${sourceType}`);
 }
@@ -896,6 +986,7 @@ function onSearchInput(sourceType) {
         tabSearchQueries[sourceType] = input ? input.value.trim() : '';
         tabPages[sourceType] = 1;
         renderFilteredDocuments(sourceType, `documentsTable-${sourceType}`);
+        updateUrl();
     }, 300);
 }
 
@@ -903,6 +994,19 @@ function onDocTypeFilterChange() {
     docTypeFilter = document.getElementById('docTypeFilter').value;
     tabPages.upload = 1;
     renderFilteredDocuments('upload', 'documentsTable-upload');
+    updateUrl();
+}
+
+function onPerPageChange(value) {
+    docsPerPage = parseInt(value, 10);
+    tabPages.upload = 1;
+    tabPages.web_crawl = 1;
+    tabPages.snippet = 1;
+    document.querySelectorAll('[id^="perPageSelect-"]').forEach(sel => { sel.value = value; });
+    renderFilteredDocuments('upload', 'documentsTable-upload');
+    renderFilteredDocuments('web_crawl', 'documentsTable-web_crawl');
+    renderFilteredDocuments('snippet', 'documentsTable-snippet');
+    updateUrl();
 }
 
 async function deleteDocument(docId) {
@@ -1107,10 +1211,9 @@ window.addEventListener('hashchange', () => {
     if (VALID_TABS.includes(hash) && hash !== activeTab) switchTab(hash);
 });
 
-// Initial load — restore tab from URL hash
+// Initial load — restore full state from URL
 document.addEventListener('DOMContentLoaded', () => {
-    const hash = window.location.hash.replace('#', '');
-    const initialTab = VALID_TABS.includes(hash) ? hash : 'upload';
+    const initialTab = restoreFromUrl();
     switchTab(initialTab);
 });
 </script>

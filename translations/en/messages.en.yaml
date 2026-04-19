@@ -901,6 +901,8 @@ kb:
     search_placeholder: "Search by filename..."
     document_type: Document Type
     all_types: All Types
+    per_page: Per page
+    all: All
   bulk:
     delete_selected: Delete Selected
     clear_selection: Clear Selection

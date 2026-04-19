@@ -903,6 +903,8 @@ kb:
     search_placeholder: "Ieškoti pagal failo pavadinimą..."
     document_type: Dokumento tipas
     all_types: Visi tipai
+    per_page: Puslapyje
+    all: Visi
   bulk:
     delete_selected: Ištrinti pasirinktus
     clear_selection: Išvalyti pasirinkimą

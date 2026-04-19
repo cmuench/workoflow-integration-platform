@@ -12,7 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Source URL field for Knowledge Base uploads and snippets** — You can now optionally provide a source URL when uploading a document or creating a snippet, so the assistant can link back to the original source
 - **Search and filter for Knowledge Base documents** — Each document tab (Upload, Sitemap, Snippet) now has a search bar to find files by name, and the Upload tab has a document type filter (All / General / Project Knowledge)
 - **Bulk delete for Knowledge Base documents** — Select multiple documents using checkboxes, then delete them all at once. "Select all" checks the current page; selections persist across pages
-- **Pagination for Knowledge Base tables** — Document tables are now paginated (20 per page) with page navigation, replacing the previous flat list that showed everything at once
+- **Pagination for Knowledge Base tables** — Document tables are now paginated (20 per page) with page navigation, replacing the previous flat list that showed everything at once. You can choose how many entries to show per page (20, 50, 100, 200, or All)
+- **Shareable Knowledge Base URLs** — Filter selections, search queries, page number, and per-page setting are now reflected in the URL, so you can share or bookmark a specific view
 
 ### Improved
 - **Cleaner formatting in Knowledge Base answers** — Fixed double-formatting where project names and module names appeared with both bold and code styling; now uses bold only for better readability in MS Teams
