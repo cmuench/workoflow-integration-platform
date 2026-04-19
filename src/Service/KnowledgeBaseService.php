@@ -43,7 +43,7 @@ class KnowledgeBaseService
         ]);
     }
 
-    public function uploadDocument(Organisation $organisation, string $filePath, string $filename, string $uploadedBy, string $documentType = 'general'): array
+    public function uploadDocument(Organisation $organisation, string $filePath, string $filename, string $uploadedBy, string $documentType = 'general', string $sourceUrl = ''): array
     {
         $baseUrl = $this->getBaseUrl($organisation);
         if (!$baseUrl) {
@@ -51,12 +51,16 @@ class KnowledgeBaseService
         }
 
         try {
-            $formData = new FormDataPart([
+            $fields = [
                 'org_uuid' => $organisation->getUuid(),
                 'uploaded_by' => $uploadedBy,
                 'document_type' => $documentType,
                 'file' => DataPart::fromPath($filePath, $filename),
-            ]);
+            ];
+            if ($sourceUrl !== '') {
+                $fields['source_url'] = $sourceUrl;
+            }
+            $formData = new FormDataPart($fields);
 
             $response = $this->httpClient->request('POST', $baseUrl . '/api/kb/upload', [
                 'auth_basic' => [$this->apiAuthUser, $this->apiAuthPassword],
@@ -105,15 +109,20 @@ class KnowledgeBaseService
         }
     }
 
-    public function addSnippet(Organisation $organisation, string $title, string $text, string $uploadedBy): array
+    public function addSnippet(Organisation $organisation, string $title, string $text, string $uploadedBy, string $sourceUrl = ''): array
     {
+        $json = [
+            'org_uuid' => $organisation->getUuid(),
+            'title' => $title,
+            'text' => $text,
+            'uploaded_by' => $uploadedBy,
+        ];
+        if ($sourceUrl !== '') {
+            $json['source_url'] = $sourceUrl;
+        }
+
         return $this->request($organisation, 'POST', '/api/kb/snippet', [
-            'json' => [
-                'org_uuid' => $organisation->getUuid(),
-                'title' => $title,
-                'text' => $text,
-                'uploaded_by' => $uploadedBy,
-            ],
+            'json' => $json,
         ]);
     }
 

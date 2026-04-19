@@ -101,13 +101,15 @@ class KnowledgeBaseController extends AbstractController
         }
 
         $documentType = $request->request->get('document_type', 'general');
+        $sourceUrl = $request->request->get('source_url', '');
 
         $result = $this->kbService->uploadDocument(
             $organisation,
             $file->getPathname(),
             $file->getClientOriginalName(),
             (string) $user->getId(),
-            $documentType
+            $documentType,
+            $sourceUrl
         );
 
         $statusCode = isset($result['error']) ? 400 : 202;
@@ -130,7 +132,8 @@ class KnowledgeBaseController extends AbstractController
             $organisation,
             $data['title'] ?? '',
             $data['text'] ?? '',
-            (string) $user->getId()
+            (string) $user->getId(),
+            $data['source_url'] ?? ''
         );
 
         $statusCode = isset($result['error']) ? 400 : 201;

@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased] - 2026-04-19
+
+### Added
+- **Knowledge Base answers now include clickable links** — When uploaded documents or snippets contain URLs (e.g., GitLab repos, internal service links), the assistant now surfaces them as clickable links in its answers instead of requiring you to ask separately
+- **Source URL field for Knowledge Base uploads and snippets** — You can now optionally provide a source URL when uploading a document or creating a snippet, so the assistant can link back to the original source
+
+### Improved
+- **Cleaner formatting in Knowledge Base answers** — Fixed double-formatting where project names and module names appeared with both bold and code styling; now uses bold only for better readability in MS Teams
+
 ## [Unreleased] - 2026-04-18
 
 ### Fixed

@@ -49,6 +49,11 @@
                     <option value="project_knowledge">{{ 'kb.upload.type_project_knowledge'|trans }}</option>
                 </select>
             </div>
+            <div class="form-group" id="sourceUrlGroup" style="display:none; margin-top: var(--space-sm);">
+                <label for="sourceUrl" style="font-size: var(--text-sm);">{{ 'kb.upload.source_url'|trans|default('Source URL (optional)') }}</label>
+                <input type="url" id="sourceUrl" class="form-control" placeholder="https://...">
+                <p style="font-size: var(--text-xs); margin-top: 2px; color: var(--text-muted);">{{ 'kb.upload.source_url_hint'|trans|default('Link to the original source (e.g., GitLab repo, internal page)') }}</p>
+            </div>
             <div class="file-info">
                 <p>{{ 'kb.upload.allowed_types'|trans }}: PDF, DOCX, TXT, MD</p>
                 <p>{{ 'kb.upload.max_size'|trans }}: 50 MB</p>
@@ -119,6 +124,11 @@
             <div class="form-group">
                 <label for="snippetText">{{ 'kb.snippet.text_label'|trans }}</label>
                 <textarea id="snippetText" class="form-control" rows="8" placeholder="{{ 'kb.snippet.text_placeholder'|trans }}"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="snippetSourceUrl" style="font-size: var(--text-sm);">{{ 'kb.upload.source_url'|trans|default('Source URL (optional)') }}</label>
+                <input type="url" id="snippetSourceUrl" class="form-control" placeholder="https://...">
+                <p style="font-size: var(--text-xs); margin-top: 2px; color: var(--text-muted);">{{ 'kb.upload.source_url_hint'|trans|default('Link to the original source (e.g., GitLab repo, internal page)') }}</p>
             </div>
             <button type="button" class="btn btn-primary" id="saveSnippetBtn" disabled onclick="saveSnippet()">
                 <span class="spinner hidden" id="snippetSpinner"></span>
@@ -435,7 +445,9 @@ function updateFileList() {
         list.appendChild(item);
     });
     uploadBtn.disabled = filesToUpload.length === 0;
-    document.getElementById('documentTypeGroup').style.display = filesToUpload.length > 0 ? 'block' : 'none';
+    const showFields = filesToUpload.length > 0 ? 'block' : 'none';
+    document.getElementById('documentTypeGroup').style.display = showFields;
+    document.getElementById('sourceUrlGroup').style.display = showFields;
 }
 
 function removeFile(i) { filesToUpload.splice(i, 1); updateFileList(); }
@@ -468,6 +480,8 @@ uploadBtn.addEventListener('click', async () => {
         const fd = new FormData();
         fd.append('file', file);
         fd.append('document_type', documentType);
+        const sourceUrl = document.getElementById('sourceUrl').value.trim();
+        if (sourceUrl) { fd.append('source_url', sourceUrl); }
         try {
             const resp = await fetch('{{ path('app_kb_api_upload') }}', { method: 'POST', body: fd });
             // Drop this placeholder regardless of success — server is now the source of truth
@@ -503,12 +517,13 @@ async function saveSnippet() {
         const resp = await fetch('{{ path('app_kb_api_snippet') }}', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title: document.getElementById('snippetTitle').value.trim(), text: snippetText.value.trim() }),
+            body: JSON.stringify({ title: document.getElementById('snippetTitle').value.trim(), text: snippetText.value.trim(), source_url: document.getElementById('snippetSourceUrl').value.trim() || undefined }),
         });
         const data = await resp.json();
         if (resp.ok) {
             document.getElementById('snippetTitle').value = '';
             snippetText.value = '';
+            document.getElementById('snippetSourceUrl').value = '';
             loadDocuments();
         } else { alert(data.error || 'Failed to save snippet'); }
     } catch (e) { alert('Error: ' + e.message); }
