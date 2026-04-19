@@ -854,6 +854,8 @@ kb:
     document_type: Dokumenttyp
     type_general: Allgemein
     type_project_knowledge: Projektwissen
+    source_url: Quell-URL (optional)
+    source_url_hint: Diese URL wird Nutzern angezeigt, wenn die KI dieses Dokument in Antworten referenziert
   sitemap:
     url_label: Sitemap-URL
     start_crawl: Crawl starten

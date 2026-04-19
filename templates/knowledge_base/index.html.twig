@@ -50,9 +50,9 @@
                 </select>
             </div>
             <div class="form-group" id="sourceUrlGroup" style="display:none; margin-top: var(--space-sm);">
-                <label for="sourceUrl" style="font-size: var(--text-sm);">{{ 'kb.upload.source_url'|trans|default('Source URL (optional)') }}</label>
+                <label for="sourceUrl" style="font-size: var(--text-sm);">{{ 'kb.upload.source_url'|trans }}</label>
                 <input type="url" id="sourceUrl" class="form-control" placeholder="https://...">
-                <p style="font-size: var(--text-xs); margin-top: 2px; color: var(--text-muted);">{{ 'kb.upload.source_url_hint'|trans|default('Link to the original source (e.g., GitLab repo, internal page)') }}</p>
+                <p style="font-size: var(--text-xs); margin-top: 2px; color: var(--text-muted);">{{ 'kb.upload.source_url_hint'|trans }}</p>
             </div>
             <div class="file-info">
                 <p>{{ 'kb.upload.allowed_types'|trans }}: PDF, DOCX, TXT, MD</p>
@@ -190,9 +190,9 @@
                 <textarea id="snippetText" class="form-control" rows="8" placeholder="{{ 'kb.snippet.text_placeholder'|trans }}"></textarea>
             </div>
             <div class="form-group">
-                <label for="snippetSourceUrl" style="font-size: var(--text-sm);">{{ 'kb.upload.source_url'|trans|default('Source URL (optional)') }}</label>
+                <label for="snippetSourceUrl" style="font-size: var(--text-sm);">{{ 'kb.upload.source_url'|trans }}</label>
                 <input type="url" id="snippetSourceUrl" class="form-control" placeholder="https://...">
-                <p style="font-size: var(--text-xs); margin-top: 2px; color: var(--text-muted);">{{ 'kb.upload.source_url_hint'|trans|default('Link to the original source (e.g., GitLab repo, internal page)') }}</p>
+                <p style="font-size: var(--text-xs); margin-top: 2px; color: var(--text-muted);">{{ 'kb.upload.source_url_hint'|trans }}</p>
             </div>
             <button type="button" class="btn btn-primary" id="saveSnippetBtn" disabled onclick="saveSnippet()">
                 <span class="spinner hidden" id="snippetSpinner"></span>

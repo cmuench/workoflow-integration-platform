@@ -852,6 +852,8 @@ kb:
     document_type: Tip document
     type_general: General
     type_project_knowledge: Cunoștințe proiect
+    source_url: URL sursă (opțional)
+    source_url_hint: Acest URL va fi afișat utilizatorilor când AI-ul face referire la acest document în răspunsuri
   sitemap:
     url_label: URL Sitemap
     start_crawl: Începeți scanarea

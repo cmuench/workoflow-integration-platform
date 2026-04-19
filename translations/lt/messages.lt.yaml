@@ -852,6 +852,8 @@ kb:
     document_type: Dokumento tipas
     type_general: Bendras
     type_project_knowledge: Projekto žinios
+    source_url: Šaltinio URL (neprivaloma)
+    source_url_hint: Šis URL bus rodomas vartotojams, kai AI nurodo šį dokumentą atsakymuose
   sitemap:
     url_label: Sitemap URL
     start_crawl: Pradėti nuskaitymą

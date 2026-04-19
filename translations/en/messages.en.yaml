@@ -850,6 +850,8 @@ kb:
     document_type: Document Type
     type_general: General
     type_project_knowledge: Project Knowledge
+    source_url: Source URL (optional)
+    source_url_hint: This URL will be shown to users when the AI references this document in answers
   sitemap:
     url_label: Sitemap URL
     start_crawl: Start Crawl
