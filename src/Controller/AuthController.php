@@ -76,6 +76,7 @@ class AuthController extends AbstractController
                 $emailHtml = $twig->render('email/magic_link.html.twig', [
                     'userName' => $user->getName() ?? 'there',
                     'magicLink' => $magicLink,
+                    'app_url' => $appUrl,
                 ]);
 
                 $resendEmailService->sendMagicLinkEmail($email, $user->getName() ?? $email, $magicLink, $emailHtml);

@@ -4,10 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased] - 2026-04-19
+## [Unreleased] - 2026-04-20
 
 ### Added
 - **Email-based login** — You can now enter your email address directly on the login page to receive a one-time login link via email, no need to message the bot first
+
+### Improved
+- **Branded login email** — The magic link email now features the Workoflow logo, valantic branding, and an Outlook-compatible light theme design
+
+## [Unreleased] - 2026-04-19
+
+### Added
 - **Knowledge Base answers now include clickable links** — When uploaded documents or snippets contain URLs (e.g., GitLab repos, internal service links), the assistant now surfaces them as clickable links in its answers instead of requiring you to ask separately
 - **Source URL field for Knowledge Base uploads and snippets** — You can now optionally provide a source URL when uploading a document or creating a snippet, so the assistant can link back to the original source
 - **Search and filter for Knowledge Base documents** — Each document tab (Upload, Sitemap, Snippet) now has a search bar to find files by name, and the Upload tab has a document type filter (All / General / Project Knowledge)
