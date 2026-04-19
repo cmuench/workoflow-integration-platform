@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Email-based login** — You can now enter your email address directly on the login page to receive a one-time login link via email, no need to message the bot first
 
 ### Improved
+- **Source URL indicator in Knowledge Base tables** — Documents and snippets with a source URL now show a small link icon next to the filename; hover to see the URL, click to open it in a new tab
 - **Branded login email** — The magic link email now features the Workoflow logo, valantic branding, and an Outlook-compatible light theme design
 
 ## [Unreleased] - 2026-04-19

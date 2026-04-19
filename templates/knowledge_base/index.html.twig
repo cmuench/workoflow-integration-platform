@@ -1070,7 +1070,7 @@ function renderFilteredDocuments(sourceType, containerId) {
         const statusClass = `status-${d.status}`;
         html += `<tr>
             <td class="kb-cb-col"><input type="checkbox" class="kb-checkbox" ${checked} onchange="toggleDocSelection('${sourceType}', '${d.id}', this.checked)"></td>
-            <td class="file-name">${d.filename}</td>
+            <td class="file-name">${d.filename}${d.source_url ? ` <a href="${d.source_url}" target="_blank" rel="noopener" class="source-url-link" title="${d.source_url}"><i class="fas fa-external-link-alt"></i></a>` : ''}</td>
             <td><span class="status-badge ${statusClass}">${d.status}</span>${d.error ? ` <small title="${d.error}" style="color:var(--danger-color);cursor:help;">&#9888;</small>` : ''}</td>
             <td>${d.chunk_count || 0}</td>
             <td>${formatDate(d.created_at)}</td>
