@@ -51,6 +51,46 @@ class KnowledgeBaseController extends AbstractController
         return new JsonResponse($result);
     }
 
+    #[Route('/api/documents/bulk-delete', name: 'app_kb_api_documents_bulk_delete', methods: ['POST'])]
+    public function apiBulkDeleteDocuments(Request $request): JsonResponse
+    {
+        $organisation = $this->getOrganisation($request);
+        if (!$organisation) {
+            return new JsonResponse(['error' => 'No organisation'], 400);
+        }
+
+        $data = json_decode($request->getContent(), true) ?? [];
+        $docIds = $data['doc_ids'] ?? [];
+
+        if (empty($docIds) || !is_array($docIds)) {
+            return new JsonResponse(['error' => 'doc_ids array is required'], 400);
+        }
+
+        if (count($docIds) > 100) {
+            return new JsonResponse(['error' => 'Maximum 100 documents per bulk delete'], 400);
+        }
+
+        $deleted = [];
+        $errors = [];
+        foreach ($docIds as $docId) {
+            if (!is_string($docId)) {
+                continue;
+            }
+            $result = $this->kbService->deleteDocument($organisation, $docId);
+            if (isset($result['error'])) {
+                $errors[] = ['doc_id' => $docId, 'error' => $result['error']];
+            } else {
+                $deleted[] = $docId;
+            }
+        }
+
+        return new JsonResponse([
+            'deleted' => $deleted,
+            'errors' => $errors,
+            'deleted_count' => count($deleted),
+        ]);
+    }
+
     #[Route('/api/documents/{docId}', name: 'app_kb_api_document_delete', methods: ['DELETE'])]
     public function apiDeleteDocument(string $docId, Request $request): JsonResponse
     {

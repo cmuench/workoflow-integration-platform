@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - **Knowledge Base answers now include clickable links** — When uploaded documents or snippets contain URLs (e.g., GitLab repos, internal service links), the assistant now surfaces them as clickable links in its answers instead of requiring you to ask separately
 - **Source URL field for Knowledge Base uploads and snippets** — You can now optionally provide a source URL when uploading a document or creating a snippet, so the assistant can link back to the original source
+- **Search and filter for Knowledge Base documents** — Each document tab (Upload, Sitemap, Snippet) now has a search bar to find files by name, and the Upload tab has a document type filter (All / General / Project Knowledge)
+- **Bulk delete for Knowledge Base documents** — Select multiple documents using checkboxes, then delete them all at once. "Select all" checks the current page; selections persist across pages
+- **Pagination for Knowledge Base tables** — Document tables are now paginated (20 per page) with page navigation, replacing the previous flat list that showed everything at once
 
 ### Improved
 - **Cleaner formatting in Knowledge Base answers** — Fixed double-formatting where project names and module names appeared with both bold and code styling; now uses bold only for better readability in MS Teams

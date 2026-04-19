@@ -887,3 +887,11 @@ kb:
     empty: No sources indexed yet.
     loading: Loading sources...
     refresh: Refresh
+  filter:
+    search: Search
+    search_placeholder: "Search by filename..."
+    document_type: Document Type
+    all_types: All Types
+  bulk:
+    delete_selected: Delete Selected
+    clear_selection: Clear Selection

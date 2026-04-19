@@ -820,3 +820,80 @@ prompt:
     hint_combine: "Patarimas: Derinkite parametrus, pvz. ?scope=organisation&category=developer&skill=jira&platform=chatgpt"
     no_token: Pirmiausia turite sugeneruoti API raktą, kad galėtumėte pasiekti promptus per API.
     generate_token: Generuoti raktą profilyje
+
+kb:
+  title: Žinių bazė
+  explanation: Įkelkite dokumentus, pridėkite tekstinius fragmentus arba nuskaitykite svetaines, kad sukurtumėte organizacijos žinių bazę. AI agentas gali ieškoti šių žinių pokalbių metu.
+  tab:
+    upload: Įkelti
+    sitemap: Sitemap
+    snippet: Fragmentas
+    sources: Indeksuotas turinys
+  tab_explanation:
+    upload: Įkelkite dokumentus, kad pridėtumėte juos prie žinių bazės. Palaikomi formatai yra PDF, DOCX, TXT ir MD. Failai automatiškai suskirstomi ir indeksuojami AI paieškai.
+    sitemap: Nuskaitykite svetaines per jų sitemap URL, kad automatiškai importuotumėte ir indeksuotumėte tinklapius. Sekite aktyvius nuskaitymo darbus ir valdykite indeksuotas sritis.
+    snippet: Pridėkite tekstinius fragmentus tiesiogiai — naudinga DUK, vidaus gairėms ar bet kokioms žinioms, kurių nėra faile ar svetainėje.
+    sources: Visas turinys, kuris buvo sėkmingai indeksuotas jūsų žinių bazėje — iš failų įkėlimų, svetainių nuskaitymų ir fragmentų.
+  upload:
+    drag_drop: Vilkite failus čia
+    select_files: Pasirinkti failus
+    allowed_types: Leistini tipai
+    max_size: Maksimalus dydis
+    upload: Įkelti
+    document_type: Dokumento tipas
+    type_general: Bendras
+    type_project_knowledge: Projekto žinios
+  sitemap:
+    url_label: Sitemap URL
+    start_crawl: Pradėti nuskaitymą
+    active_crawls: Aktyvūs nuskaitymai
+    no_crawls: Dar nėra nuskaitymo užduočių.
+    url: Sitemap URL
+    progress: Progresas
+    started: Pradėta
+    delete_confirm: Ištrinti šią nuskaitymo užduotį ir visus susijusius duomenis?
+  snippet:
+    title_label: Pavadinimas
+    title_placeholder: Įveskite šio fragmento pavadinimą
+    text_label: Turinys
+    text_placeholder: Įveskite tekstinį turinį, kurį norite pridėti prie žinių bazės...
+    save: Išsaugoti fragmentą
+    view_title: Peržiūrėti fragmentą
+    edit_title: Redaguoti fragmentą
+  documents:
+    title: Įkėlimo konvejeris
+    filename: Failo pavadinimas
+    source_type: Šaltinis
+    status: Būsena
+    chunks: Dalys
+    date: Data
+    empty: Dar nėra įkeltų dokumentų.
+    loading: Kraunami dokumentai...
+    uploading: Įkeliama...
+    delete_confirm: Ištrinti šį dokumentą ir jo indeksuotus duomenis?
+  domains:
+    title: Indeksuotos sritys
+    domain: Sritis
+    pages: Puslapiai
+    chunks: Iš viso dalių
+    empty: Dar nėra nuskaitytų sričių.
+    loading: Kraunamos sritys...
+    delete_confirm: "Ištrinti visus {count} puslapius iš {domain}?"
+  sources:
+    title: Žinių bazės šaltiniai
+    source_file: Šaltinio failas
+    type: Dokumento tipas
+    source_type: Šaltinio tipas
+    chunks: Dalys
+    indexed_at: Indeksuota
+    empty: Dar nėra indeksuotų šaltinių.
+    loading: Kraunami šaltiniai...
+    refresh: Atnaujinti
+  filter:
+    search: Paieška
+    search_placeholder: "Ieškoti pagal failo pavadinimą..."
+    document_type: Dokumento tipas
+    all_types: Visi tipai
+  bulk:
+    delete_selected: Ištrinti pasirinktus
+    clear_selection: Išvalyti pasirinkimą

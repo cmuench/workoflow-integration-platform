@@ -820,3 +820,80 @@ prompt:
     hint_combine: "Sfat: Combinați parametrii, de ex. ?scope=organisation&category=developer&skill=jira&platform=chatgpt"
     no_token: Trebuie să generați mai întâi un token API pentru a accesa prompturile prin API.
     generate_token: Generați token-ul în Profil
+
+kb:
+  title: Bază de cunoștințe
+  explanation: Încărcați documente, adăugați fragmente de text sau scanați site-uri web pentru a construi baza de cunoștințe a organizației dvs. Agentul AI poate căuta aceste cunoștințe în timpul conversațiilor.
+  tab:
+    upload: Încărcare
+    sitemap: Sitemap
+    snippet: Fragment
+    sources: Conținut indexat
+  tab_explanation:
+    upload: Încărcați documente pentru a le adăuga la baza de cunoștințe. Formatele acceptate sunt PDF, DOCX, TXT și MD. Fișierele sunt fragmentate automat și indexate pentru recuperarea AI.
+    sitemap: Scanați site-uri web prin URL-ul sitemap pentru a importa și indexa automat paginile web. Urmăriți joburile active de scanare și gestionați domeniile indexate.
+    snippet: Adăugați fragmente de text direct — util pentru FAQ-uri, ghiduri interne sau orice cunoștințe care nu există într-un fișier sau pe un site web.
+    sources: Tot conținutul care a fost indexat cu succes în baza dvs. de cunoștințe — din încărcări de fișiere, scanări web și fragmente combinate.
+  upload:
+    drag_drop: Trageți fișierele aici
+    select_files: Selectați fișiere
+    allowed_types: Tipuri permise
+    max_size: Dimensiune maximă
+    upload: Încărcare
+    document_type: Tip document
+    type_general: General
+    type_project_knowledge: Cunoștințe proiect
+  sitemap:
+    url_label: URL Sitemap
+    start_crawl: Începeți scanarea
+    active_crawls: Scanări active
+    no_crawls: Niciun job de scanare încă.
+    url: URL Sitemap
+    progress: Progres
+    started: Început
+    delete_confirm: Ștergeți acest job de scanare și toate datele asociate?
+  snippet:
+    title_label: Titlu
+    title_placeholder: Introduceți un titlu pentru acest fragment
+    text_label: Conținut
+    text_placeholder: Introduceți conținut text pentru a adăuga la baza de cunoștințe...
+    save: Salvați fragmentul
+    view_title: Vizualizați fragmentul
+    edit_title: Editați fragmentul
+  documents:
+    title: Pipeline încărcare
+    filename: Nume fișier
+    source_type: Sursă
+    status: Status
+    chunks: Fragmente
+    date: Data
+    empty: Niciun document încărcat încă.
+    loading: Se încarcă documentele...
+    uploading: Se încarcă...
+    delete_confirm: Ștergeți acest document și datele indexate?
+  domains:
+    title: Domenii indexate
+    domain: Domeniu
+    pages: Pagini
+    chunks: Total fragmente
+    empty: Niciun domeniu scanat încă.
+    loading: Se încarcă domeniile...
+    delete_confirm: "Ștergeți toate cele {count} pagini de pe {domain}?"
+  sources:
+    title: Surse bază de cunoștințe
+    source_file: Fișier sursă
+    type: Tip document
+    source_type: Tip sursă
+    chunks: Fragmente
+    indexed_at: Indexat la
+    empty: Nicio sursă indexată încă.
+    loading: Se încarcă sursele...
+    refresh: Reîmprospătare
+  filter:
+    search: Căutare
+    search_placeholder: "Caută după numele fișierului..."
+    document_type: Tip document
+    all_types: Toate tipurile
+  bulk:
+    delete_selected: Șterge selectate
+    clear_selection: Anulează selecția

@@ -70,9 +70,35 @@
                 <div class="kb-section-header">
                     <h2>{{ 'kb.documents.title'|trans }}</h2>
                 </div>
+                <div class="kb-filter-bar" id="filterBar-upload">
+                    <div class="kb-filter-row">
+                        <div class="kb-filter-group">
+                            <label for="searchInput-upload" class="kb-filter-label">{{ 'kb.filter.search'|trans }}</label>
+                            <input type="text" id="searchInput-upload" class="kb-filter-input" placeholder="{{ 'kb.filter.search_placeholder'|trans }}" oninput="onSearchInput('upload')">
+                        </div>
+                        <div class="kb-filter-group">
+                            <label for="docTypeFilter" class="kb-filter-label">{{ 'kb.filter.document_type'|trans }}</label>
+                            <select id="docTypeFilter" class="kb-filter-input" onchange="onDocTypeFilterChange()">
+                                <option value="all">{{ 'kb.filter.all_types'|trans }}</option>
+                                <option value="general">{{ 'kb.upload.type_general'|trans }}</option>
+                                <option value="project_knowledge">{{ 'kb.upload.type_project_knowledge'|trans }}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="kb-bulk-actions" id="bulkActions-upload" style="display:none;">
+                        <span class="kb-bulk-count" id="bulkCount-upload">0 {{ 'kb.bulk.selected'|trans|default('selected') }}</span>
+                        <button type="button" class="btn btn-danger btn-small" onclick="bulkDelete('upload')">
+                            <i class="fas fa-trash"></i> {{ 'kb.bulk.delete_selected'|trans }}
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="clearSelection('upload')">
+                            {{ 'kb.bulk.clear_selection'|trans }}
+                        </button>
+                    </div>
+                </div>
                 <div id="documentsTable-upload">
                     <div class="empty-state"><p>{{ 'kb.documents.loading'|trans }}</p></div>
                 </div>
+                <div id="pagination-upload" class="kb-pagination"></div>
             </div>
         </div>
 
@@ -109,9 +135,27 @@
                 <div class="kb-section-header">
                     <h2>{{ 'kb.documents.title'|trans }}</h2>
                 </div>
+                <div class="kb-filter-bar" id="filterBar-web_crawl">
+                    <div class="kb-filter-row">
+                        <div class="kb-filter-group">
+                            <label for="searchInput-web_crawl" class="kb-filter-label">{{ 'kb.filter.search'|trans }}</label>
+                            <input type="text" id="searchInput-web_crawl" class="kb-filter-input" placeholder="{{ 'kb.filter.search_placeholder'|trans }}" oninput="onSearchInput('web_crawl')">
+                        </div>
+                    </div>
+                    <div class="kb-bulk-actions" id="bulkActions-web_crawl" style="display:none;">
+                        <span class="kb-bulk-count" id="bulkCount-web_crawl">0 {{ 'kb.bulk.selected'|trans|default('selected') }}</span>
+                        <button type="button" class="btn btn-danger btn-small" onclick="bulkDelete('web_crawl')">
+                            <i class="fas fa-trash"></i> {{ 'kb.bulk.delete_selected'|trans }}
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="clearSelection('web_crawl')">
+                            {{ 'kb.bulk.clear_selection'|trans }}
+                        </button>
+                    </div>
+                </div>
                 <div id="documentsTable-web_crawl">
                     <div class="empty-state"><p>{{ 'kb.documents.loading'|trans }}</p></div>
                 </div>
+                <div id="pagination-web_crawl" class="kb-pagination"></div>
             </div>
         </div>
 
@@ -140,9 +184,27 @@
                 <div class="kb-section-header">
                     <h2>{{ 'kb.documents.title'|trans }}</h2>
                 </div>
+                <div class="kb-filter-bar" id="filterBar-snippet">
+                    <div class="kb-filter-row">
+                        <div class="kb-filter-group">
+                            <label for="searchInput-snippet" class="kb-filter-label">{{ 'kb.filter.search'|trans }}</label>
+                            <input type="text" id="searchInput-snippet" class="kb-filter-input" placeholder="{{ 'kb.filter.search_placeholder'|trans }}" oninput="onSearchInput('snippet')">
+                        </div>
+                    </div>
+                    <div class="kb-bulk-actions" id="bulkActions-snippet" style="display:none;">
+                        <span class="kb-bulk-count" id="bulkCount-snippet">0 {{ 'kb.bulk.selected'|trans|default('selected') }}</span>
+                        <button type="button" class="btn btn-danger btn-small" onclick="bulkDelete('snippet')">
+                            <i class="fas fa-trash"></i> {{ 'kb.bulk.delete_selected'|trans }}
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-small" onclick="clearSelection('snippet')">
+                            {{ 'kb.bulk.clear_selection'|trans }}
+                        </button>
+                    </div>
+                </div>
                 <div id="documentsTable-snippet">
                     <div class="empty-state"><p>{{ 'kb.documents.loading'|trans }}</p></div>
                 </div>
+                <div id="pagination-snippet" class="kb-pagination"></div>
             </div>
         </div>
 
@@ -161,8 +223,6 @@
             </div>
         </div>
 
-        {# Global pagination (shared across document tables) #}
-        <div id="documentsPagination" class="kb-pagination"></div>
     </div>
 </div>
 
@@ -382,16 +442,114 @@
 .kb-sitemap-row .form-control {
     flex: 1;
 }
+
+/* KB Filter Bar */
+.kb-filter-bar {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--space-md) var(--space-lg);
+    margin-bottom: var(--space-md);
+}
+.kb-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    align-items: flex-end;
+}
+.kb-filter-group {
+    flex: 1;
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs, 0.25rem);
+}
+.kb-filter-label {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+.kb-filter-input {
+    background: var(--input-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: var(--space-sm) var(--space-md);
+    color: var(--text-primary);
+    font-size: var(--text-sm);
+    font-family: var(--font-sans);
+    transition: var(--transition);
+    width: 100%;
+}
+.kb-filter-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.15);
+}
+.kb-filter-input::placeholder {
+    color: var(--text-muted);
+}
+
+/* Bulk Actions */
+.kb-bulk-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-top: var(--space-sm);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--border-color);
+}
+.kb-bulk-count {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Checkbox in table */
+.kb-checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+}
+th.kb-cb-col, td.kb-cb-col {
+    width: 40px;
+    text-align: center;
+    padding: 0.5rem;
+}
+
+/* Pagination info */
+.kb-pagination-info {
+    text-align: center;
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin-top: var(--space-sm);
+}
+.kb-pagination button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .kb-filter-row { flex-direction: column; }
+    .kb-filter-group { width: 100%; min-width: 100%; }
+}
 </style>
 
 <script>
 const API_BASE = '{{ path('app_knowledge_base') }}api';
-let currentPage = 1;
 let refreshInterval = null;
 let crawlRefreshInterval = null;
 let allDocuments = [];
 let activeTab = 'upload';
 const VALID_TABS = ['upload', 'sitemap', 'snippet', 'sources'];
+
+// Per-tab pagination, selection, search
+const DOCS_PER_PAGE = 20;
+const tabPages = { upload: 1, web_crawl: 1, snippet: 1 };
+const tabSelections = { upload: new Set(), web_crawl: new Set(), snippet: new Set() };
+const tabSearchQueries = { upload: '', web_crawl: '', snippet: '' };
+let docTypeFilter = 'all';
+let searchTimeout = null;
 const TAB_EXPLANATIONS = {
     upload: {{ 'kb.tab_explanation.upload'|trans|json_encode|raw }},
     sitemap: {{ 'kb.tab_explanation.sitemap'|trans|json_encode|raw }},
@@ -549,36 +707,61 @@ async function startCrawl() {
 }
 
 // Load documents and distribute to tab-specific tables
-async function loadDocuments(page) {
-    if (page) currentPage = page;
+async function loadDocuments() {
     try {
-        const resp = await fetch(`{{ path('app_kb_api_documents') }}?page=${currentPage}&per_page=100`);
+        const resp = await fetch(`{{ path('app_kb_api_documents') }}?page=1&per_page=500`);
         const data = await resp.json();
         allDocuments = data.documents || [];
         renderFilteredDocuments('upload', 'documentsTable-upload');
         renderFilteredDocuments('web_crawl', 'documentsTable-web_crawl');
         renderFilteredDocuments('snippet', 'documentsTable-snippet');
-        renderPagination(data);
-        // Auto-refresh if any docs are pending/processing
         const hasPending = allDocuments.some(d => d.status === 'pending' || d.status === 'processing');
         if (hasPending) startAutoRefresh();
         else stopAutoRefresh();
     } catch (e) { console.error('Failed to load documents:', e); }
 }
 
+function getFilteredDocs(sourceType) {
+    let docs = allDocuments.filter(d => d.source_type === sourceType);
+    if (sourceType === 'upload' && docTypeFilter !== 'all') {
+        docs = docs.filter(d => d.document_type === docTypeFilter);
+    }
+    const q = tabSearchQueries[sourceType];
+    if (q) {
+        const lower = q.toLowerCase();
+        docs = docs.filter(d => d.filename.toLowerCase().includes(lower));
+    }
+    return docs;
+}
+
 function renderFilteredDocuments(sourceType, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
-    const docs = allDocuments.filter(d => d.source_type === sourceType);
+    const filteredDocs = getFilteredDocs(sourceType);
     const placeholders = sourceType === 'upload' ? uploadingPlaceholders : [];
-    if (docs.length === 0 && placeholders.length === 0) {
+
+    if (filteredDocs.length === 0 && placeholders.length === 0) {
         container.innerHTML = '<div class="empty-state"><p>{{ "kb.documents.empty"|trans }}</p></div>';
+        renderTabPagination(sourceType, 0);
+        updateBulkActionsUI(sourceType);
         return;
     }
-    let html = '<div class="files-table"><table><thead><tr><th>{{ "kb.documents.filename"|trans }}</th><th>{{ "kb.documents.status"|trans }}</th><th>{{ "kb.documents.chunks"|trans }}</th><th>{{ "kb.documents.date"|trans }}</th><th>{{ "action.actions"|trans }}</th></tr></thead><tbody>';
-    // Placeholder rows for files currently being uploaded (no doc_id yet)
+
+    const page = tabPages[sourceType] || 1;
+    const totalPages = Math.ceil(filteredDocs.length / DOCS_PER_PAGE);
+    if (page > totalPages && totalPages > 0) tabPages[sourceType] = totalPages;
+    const start = (tabPages[sourceType] - 1) * DOCS_PER_PAGE;
+    const pageItems = filteredDocs.slice(start, start + DOCS_PER_PAGE);
+    const selection = tabSelections[sourceType];
+    const allVisibleSelected = pageItems.length > 0 && pageItems.every(d => selection.has(d.id));
+
+    let html = '<div class="files-table"><table><thead><tr>';
+    html += `<th class="kb-cb-col"><input type="checkbox" class="kb-checkbox" ${allVisibleSelected ? 'checked' : ''} onchange="toggleSelectAll('${sourceType}', this.checked)"></th>`;
+    html += '<th>{{ "kb.documents.filename"|trans }}</th><th>{{ "kb.documents.status"|trans }}</th><th>{{ "kb.documents.chunks"|trans }}</th><th>{{ "kb.documents.date"|trans }}</th><th>{{ "action.actions"|trans }}</th></tr></thead><tbody>';
+
     placeholders.forEach(p => {
         html += `<tr class="row-uploading">
+            <td class="kb-cb-col"></td>
             <td class="file-name">${p.filename}</td>
             <td><span class="status-badge status-uploading"><span class="badge-spinner"></span>{{ "kb.documents.uploading"|trans }}</span></td>
             <td>—</td>
@@ -586,9 +769,12 @@ function renderFilteredDocuments(sourceType, containerId) {
             <td class="file-actions">—</td>
         </tr>`;
     });
-    docs.forEach(d => {
+
+    pageItems.forEach(d => {
+        const checked = selection.has(d.id) ? 'checked' : '';
         const statusClass = `status-${d.status}`;
         html += `<tr>
+            <td class="kb-cb-col"><input type="checkbox" class="kb-checkbox" ${checked} onchange="toggleDocSelection('${sourceType}', '${d.id}', this.checked)"></td>
             <td class="file-name">${d.filename}</td>
             <td><span class="status-badge ${statusClass}">${d.status}</span>${d.error ? ` <small title="${d.error}" style="color:var(--danger-color);cursor:help;">&#9888;</small>` : ''}</td>
             <td>${d.chunk_count || 0}</td>
@@ -596,21 +782,127 @@ function renderFilteredDocuments(sourceType, containerId) {
             <td class="file-actions">${sourceType === 'upload' && d.status === 'completed' ? `<a class="btn btn-small btn-secondary" href="${API_BASE}/documents/${d.id}/download">{{ "action.download"|trans }}</a> ` : ''}${sourceType === 'snippet' ? `<button class="btn btn-small btn-secondary" onclick="viewSnippet('${d.id}')">{{ "action.view"|trans }}</button> <button class="btn btn-small btn-primary" onclick="editSnippet('${d.id}')">{{ "action.edit"|trans }}</button> ` : ''}<button class="btn btn-small btn-danger" onclick="deleteDocument('${d.id}')">{{ "action.delete"|trans }}</button></td>
         </tr>`;
     });
+
     html += '</tbody></table></div>';
+    container.innerHTML = html;
+    renderTabPagination(sourceType, filteredDocs.length);
+    updateBulkActionsUI(sourceType);
+}
+
+function renderTabPagination(sourceType, totalItems) {
+    const container = document.getElementById(`pagination-${sourceType}`);
+    if (!container) return;
+    const pages = Math.ceil(totalItems / DOCS_PER_PAGE);
+    const currentPg = tabPages[sourceType] || 1;
+
+    if (pages <= 1) {
+        container.innerHTML = totalItems > 0 ? `<div class="kb-pagination-info">${totalItems} document${totalItems !== 1 ? 's' : ''}</div>` : '';
+        return;
+    }
+
+    const from = ((currentPg - 1) * DOCS_PER_PAGE) + 1;
+    const to = Math.min(currentPg * DOCS_PER_PAGE, totalItems);
+    let html = `<div class="kb-pagination-info">{{ "kb.documents.showing"|trans|default("Showing") }} ${from}–${to} {{ "kb.documents.of"|trans|default("of") }} ${totalItems}</div>`;
+    html += '<div class="kb-pagination">';
+    html += `<button ${currentPg === 1 ? 'disabled' : ''} onclick="goToPage('${sourceType}', ${currentPg - 1})">‹ {{ "pagination.previous"|trans|default("Prev") }}</button>`;
+
+    const maxButtons = 7;
+    let startPage = Math.max(1, currentPg - 3);
+    let endPage = Math.min(pages, startPage + maxButtons - 1);
+    if (endPage - startPage < maxButtons - 1) startPage = Math.max(1, endPage - maxButtons + 1);
+
+    if (startPage > 1) html += `<button onclick="goToPage('${sourceType}', 1)">1</button>`;
+    if (startPage > 2) html += '<span style="color:var(--text-muted);padding:0 0.3rem;">…</span>';
+    for (let i = startPage; i <= endPage; i++) {
+        html += `<button class="${i === currentPg ? 'active' : ''}" onclick="goToPage('${sourceType}', ${i})">${i}</button>`;
+    }
+    if (endPage < pages - 1) html += '<span style="color:var(--text-muted);padding:0 0.3rem;">…</span>';
+    if (endPage < pages) html += `<button onclick="goToPage('${sourceType}', ${pages})">${pages}</button>`;
+    html += `<button ${currentPg === pages ? 'disabled' : ''} onclick="goToPage('${sourceType}', ${currentPg + 1})">{{ "pagination.next"|trans|default("Next") }} ›</button>`;
+    html += '</div>';
     container.innerHTML = html;
 }
 
-function renderPagination(data) {
-    const total = data.total || 0;
-    const perPage = data.per_page || 100;
-    const pages = Math.ceil(total / perPage);
-    const container = document.getElementById('documentsPagination');
-    if (pages <= 1) { container.innerHTML = ''; return; }
-    let html = '';
-    for (let i = 1; i <= pages; i++) {
-        html += `<button class="${i === currentPage ? 'active' : ''}" onclick="loadDocuments(${i})">${i}</button>`;
+function goToPage(sourceType, page) {
+    tabPages[sourceType] = page;
+    renderFilteredDocuments(sourceType, `documentsTable-${sourceType}`);
+}
+
+// Selection management
+function toggleDocSelection(sourceType, docId, checked) {
+    const sel = tabSelections[sourceType];
+    if (checked) sel.add(docId); else sel.delete(docId);
+    updateBulkActionsUI(sourceType);
+    const selectAllCb = document.querySelector(`#documentsTable-${sourceType} thead .kb-checkbox`);
+    if (selectAllCb) {
+        const pageItems = getFilteredDocs(sourceType).slice(
+            (tabPages[sourceType] - 1) * DOCS_PER_PAGE,
+            tabPages[sourceType] * DOCS_PER_PAGE
+        );
+        selectAllCb.checked = pageItems.length > 0 && pageItems.every(d => sel.has(d.id));
     }
-    container.innerHTML = html;
+}
+
+function toggleSelectAll(sourceType, checked) {
+    const sel = tabSelections[sourceType];
+    const pageItems = getFilteredDocs(sourceType).slice(
+        (tabPages[sourceType] - 1) * DOCS_PER_PAGE,
+        tabPages[sourceType] * DOCS_PER_PAGE
+    );
+    pageItems.forEach(d => { if (checked) sel.add(d.id); else sel.delete(d.id); });
+    renderFilteredDocuments(sourceType, `documentsTable-${sourceType}`);
+}
+
+function clearSelection(sourceType) {
+    tabSelections[sourceType].clear();
+    renderFilteredDocuments(sourceType, `documentsTable-${sourceType}`);
+}
+
+function updateBulkActionsUI(sourceType) {
+    const sel = tabSelections[sourceType];
+    const bar = document.getElementById(`bulkActions-${sourceType}`);
+    const count = document.getElementById(`bulkCount-${sourceType}`);
+    if (!bar) return;
+    bar.style.display = sel.size > 0 ? 'flex' : 'none';
+    if (count) count.textContent = sel.size + ' {{ "kb.bulk.selected"|trans|default("selected") }}';
+}
+
+async function bulkDelete(sourceType) {
+    const sel = tabSelections[sourceType];
+    if (sel.size === 0) return;
+    const cnt = sel.size;
+    if (!confirm(`{{ "kb.documents.delete_confirm"|trans }}`.replace('this document', cnt + ' document' + (cnt !== 1 ? 's' : '')))) return;
+
+    try {
+        const resp = await fetch(`{{ path('app_knowledge_base') }}api/documents/bulk-delete`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ doc_ids: Array.from(sel) }),
+        });
+        const data = await resp.json();
+        if (resp.ok) {
+            sel.clear();
+            await loadDocuments();
+            if (activeTab === 'sources') loadSources();
+        } else { alert(data.error || 'Bulk delete failed'); }
+    } catch (e) { alert('Bulk delete error: ' + e.message); }
+}
+
+// Search & filter handlers
+function onSearchInput(sourceType) {
+    const input = document.getElementById(`searchInput-${sourceType}`);
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+        tabSearchQueries[sourceType] = input ? input.value.trim() : '';
+        tabPages[sourceType] = 1;
+        renderFilteredDocuments(sourceType, `documentsTable-${sourceType}`);
+    }, 300);
+}
+
+function onDocTypeFilterChange() {
+    docTypeFilter = document.getElementById('docTypeFilter').value;
+    tabPages.upload = 1;
+    renderFilteredDocuments('upload', 'documentsTable-upload');
 }
 
 async function deleteDocument(docId) {

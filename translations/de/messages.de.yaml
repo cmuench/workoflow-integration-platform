@@ -891,3 +891,11 @@ kb:
     empty: Noch keine Quellen indexiert.
     loading: Quellen werden geladen...
     refresh: Aktualisieren
+  filter:
+    search: Suche
+    search_placeholder: "Nach Dateiname suchen..."
+    document_type: Dokumenttyp
+    all_types: Alle Typen
+  bulk:
+    delete_selected: Ausgewählte löschen
+    clear_selection: Auswahl aufheben
