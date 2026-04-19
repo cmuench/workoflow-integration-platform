@@ -123,6 +123,15 @@ auth:
     subtitle: Integracijos platforma AI agentams
     google: Prisijunkite su Google
     privacy: Prisijungdami sutinkate su mūsų privatumo politika.
+    email_title: Prisijungimas el. paštu
+    email_description: Įveskite savo el. pašto adresą, kad gautumėte vienkartinę prisijungimo nuorodą.
+    email_placeholder: jusu@elpastas.lt
+    send_magic_link: Siųsti prisijungimo nuorodą
+    or_login_via: arba prisijunkite per pokalbių programą
+    chat_title: Pokalbių programa
+    chat_description: '<strong>Magic Link</strong> taip pat galite gauti parašę Workoflow botui per:'
+    other_apps: Kitos prijungtos pokalbių programos
+    validity_note: 'Magic Link galioja <strong>24 valandas</strong> ir gali būti naudojamas kelis kartus per šį laikotarpį. Jei negavote nuorodos, susisiekite su administratoriumi.'
 
 general:
   title: Mano agentas

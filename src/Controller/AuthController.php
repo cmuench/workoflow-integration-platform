@@ -3,13 +3,17 @@
 namespace App\Controller;
 
 use App\Repository\UserRepository;
+use App\Service\MagicLinkService;
+use App\Service\ResendEmailService;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Twig\Environment;
 
 class AuthController extends AbstractController
 {
@@ -27,6 +31,61 @@ class AuthController extends AbstractController
             'last_username' => $lastUsername,
             'error' => $error,
         ]);
+    }
+
+    #[Route('/auth/request-magic-link', name: 'auth_request_magic_link', methods: ['POST'])]
+    public function requestMagicLink(
+        Request $request,
+        UserRepository $userRepository,
+        MagicLinkService $magicLinkService,
+        ResendEmailService $resendEmailService,
+        Environment $twig,
+        LoggerInterface $logger,
+    ): RedirectResponse {
+        $email = trim((string) $request->request->get('email', ''));
+
+        if (!$this->isCsrfTokenValid('request_magic_link', $request->request->get('_csrf_token'))) {
+            $this->addFlash('danger', 'Invalid request. Please try again.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        if ($email === '' || !filter_var($email, \FILTER_VALIDATE_EMAIL)) {
+            $this->addFlash('danger', 'Please enter a valid email address.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        $user = $userRepository->findOneByEmailWithOrganisation($email);
+
+        if ($user !== null) {
+            $userOrganisations = $user->getUserOrganisations();
+            $firstUo = $userOrganisations->first();
+
+            if ($firstUo !== false && $firstUo->getOrganisation() !== null) {
+                $orgUuid = $firstUo->getOrganisation()->getUuid();
+                $workflowUserId = $firstUo->getWorkflowUserId() ?? (string) $user->getId();
+
+                $appUrl = $this->getParameter('app.url');
+                $magicLink = $magicLinkService->generateMagicLink(
+                    $user->getName() ?? $email,
+                    $orgUuid,
+                    $appUrl,
+                    $workflowUserId,
+                    $email,
+                );
+
+                $emailHtml = $twig->render('email/magic_link.html.twig', [
+                    'userName' => $user->getName() ?? 'there',
+                    'magicLink' => $magicLink,
+                ]);
+
+                $resendEmailService->sendMagicLinkEmail($email, $user->getName() ?? $email, $magicLink, $emailHtml);
+            }
+        }
+
+        $logger->info('Magic link requested via email form', ['email' => $email]);
+
+        $this->addFlash('success', 'If an account with that email exists, we\'ve sent you a login link. Please check your inbox.');
+        return $this->redirectToRoute('app_login');
     }
 
     #[Route('/auth/google', name: 'connect_google_start')]

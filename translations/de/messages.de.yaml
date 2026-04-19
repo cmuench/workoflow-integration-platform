@@ -123,6 +123,15 @@ auth:
     subtitle: Integration Platform für AI Agenten
     google: Mit Google anmelden
     privacy: Mit der Anmeldung akzeptieren Sie unsere Datenschutzbestimmungen.
+    email_title: Anmeldung per E-Mail
+    email_description: Geben Sie Ihre E-Mail-Adresse ein, um einen einmaligen Anmeldelink zu erhalten.
+    email_placeholder: ihre@email.de
+    send_magic_link: Anmeldelink senden
+    or_login_via: oder anmelden über Chat-Anwendung
+    chat_title: Chat-Anwendung
+    chat_description: 'Sie können einen <strong>Magic Link</strong> auch erhalten, indem Sie dem Workoflow Bot schreiben über:'
+    other_apps: Andere verbundene Chat-Anwendungen
+    validity_note: 'Der Magic Link ist <strong>24 Stunden</strong> gültig und kann innerhalb dieses Zeitraums mehrfach verwendet werden. Falls Sie Ihren Link nicht erhalten haben, wenden Sie sich bitte an Ihren Administrator.'
 
 general:
   title: Mein Agent

@@ -69,6 +69,11 @@ services:
     App\Service\MagicLinkService:
         arguments:
             $magicLinkSecret: '%env(MAGIC_LINK_SECRET)%'
+
+    App\Service\ResendEmailService:
+        arguments:
+            $resendApiKey: '%env(RESEND_API_KEY)%'
+            $fromEmail: '%env(RESEND_FROM_EMAIL)%'
     
     App\Security\MagicLinkAuthenticator:
         arguments:

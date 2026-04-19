@@ -123,6 +123,15 @@ auth:
     subtitle: Platformă de integrare pentru agenți AI
     google: Autentificați-vă cu Google
     privacy: Prin autentificare, sunteți de acord cu politica noastră de confidențialitate.
+    email_title: Autentificare prin email
+    email_description: Introduceți adresa de email pentru a primi un link de autentificare unic.
+    email_placeholder: email@exemplu.ro
+    send_magic_link: Trimite link de autentificare
+    or_login_via: sau autentificați-vă prin aplicație de chat
+    chat_title: Aplicație de chat
+    chat_description: 'Puteți primi un <strong>Magic Link</strong> și prin trimiterea unui mesaj botului Workoflow prin:'
+    other_apps: Alte aplicații de chat conectate
+    validity_note: 'Magic Link-ul va fi valabil timp de <strong>24 de ore</strong> și poate fi utilizat de mai multe ori în această perioadă. Dacă nu ați primit link-ul, contactați administratorul.'
 
 general:
   title: Agentul meu

@@ -123,6 +123,15 @@ auth:
     subtitle: Integration Platform for AI Agents
     google: Sign in with Google
     privacy: By signing in, you agree to our privacy policy.
+    email_title: Login via Email
+    email_description: Enter your email address to receive a one-time login link.
+    email_placeholder: your@email.com
+    send_magic_link: Send Login Link
+    or_login_via: or login via chat application
+    chat_title: Chat Application
+    chat_description: 'You can also receive a <strong>Magic Link</strong> by messaging the Workoflow bot via:'
+    other_apps: Other connected chat applications
+    validity_note: 'The Magic Link will be valid for <strong>24 hours</strong> and can be used multiple times within that period. If you haven''t received your link, please contact your administrator.'
 
 general:
   title: My Agent

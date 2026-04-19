@@ -4,7 +4,7 @@
 
 {% block body %}
 <div class="login-page">
-    
+
     <div class="login-container">
         <div class="login-card">
                 <div class="login-header">
@@ -18,20 +18,52 @@
                     </div>
                 {% endif %}
 
-                {# Google login temporarily disabled - replaced with Magic Link authentication #}
-                {#
-                <a href="{{ path('connect_google_start') }}" class="login-button">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                    </svg>
-                    {{ 'auth.login.google'|trans }}
-                </a>
-                #}
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success">
+                        {{ message }}
+                    </div>
+                {% endfor %}
 
-                {# Magic Link Authentication Info #}
+                {% for message in app.flashes('danger') %}
+                    <div class="alert alert-danger">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                {# Email Magic Link Login Form #}
+                <div class="email-login-section">
+                    <div class="section-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                            <path d="M22 7l-10 7L2 7"></path>
+                        </svg>
+                    </div>
+
+                    <h3>{{ 'auth.login.email_title'|trans }}</h3>
+                    <p class="section-description">{{ 'auth.login.email_description'|trans }}</p>
+
+                    <form action="{{ path('auth_request_magic_link') }}" method="post" class="email-login-form">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('request_magic_link') }}">
+                        <div class="form-group">
+                            <input type="email" name="email" required placeholder="{{ 'auth.login.email_placeholder'|trans }}" class="form-input" autocomplete="email" autofocus>
+                        </div>
+                        <button type="submit" class="login-button">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                <polyline points="10 17 15 12 10 7"></polyline>
+                                <line x1="15" y1="12" x2="3" y2="12"></line>
+                            </svg>
+                            {{ 'auth.login.send_magic_link'|trans }}
+                        </button>
+                    </form>
+                </div>
+
+                {# Divider #}
+                <div class="login-divider">
+                    <span>{{ 'auth.login.or_login_via'|trans }}</span>
+                </div>
+
+                {# Chat App Magic Link Info (secondary) #}
                 <div class="magic-link-info">
                     <div class="info-icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -41,10 +73,10 @@
                         </svg>
                     </div>
 
-                    <h3>Magic Link Authentication</h3>
+                    <h3>{{ 'auth.login.chat_title'|trans }}</h3>
 
                     <p class="info-text">
-                        To access Workoflow, please use the <strong>Magic Link</strong> sent to you via:
+                        {{ 'auth.login.chat_description'|trans|raw }}
                     </p>
 
                     <div class="channels-list">
@@ -58,17 +90,27 @@
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
                             </svg>
-                            <span>Other connected chat applications</span>
+                            <span>{{ 'auth.login.other_apps'|trans }}</span>
                         </div>
                     </div>
 
                     <div class="info-note">
-                        <p>
-                            The Magic Link will be valid for <strong>24 hours</strong> and can be used multiple times within that period.
-                            If you haven't received your link, please contact your administrator.
-                        </p>
+                        <p>{{ 'auth.login.validity_note'|trans|raw }}</p>
                     </div>
                 </div>
+
+                {# Google login temporarily disabled #}
+                {#
+                <a href="{{ path('connect_google_start') }}" class="login-button">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    {{ 'auth.login.google'|trans }}
+                </a>
+                #}
 
                 <div class="login-footer">
                     {{ 'auth.login.privacy'|trans }}
