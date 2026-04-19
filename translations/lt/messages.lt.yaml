@@ -906,5 +906,6 @@ kb:
     per_page: Puslapyje
     all: Visi
   bulk:
+    selected: pasirinkta
     delete_selected: Ištrinti pasirinktus
     clear_selection: Išvalyti pasirinkimą

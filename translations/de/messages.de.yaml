@@ -908,5 +908,6 @@ kb:
     per_page: Pro Seite
     all: Alle
   bulk:
+    selected: ausgewählt
     delete_selected: Ausgewählte löschen
     clear_selection: Auswahl aufheben
