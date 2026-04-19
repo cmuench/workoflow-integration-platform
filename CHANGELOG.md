@@ -13,7 +13,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Search and filter for Knowledge Base documents** — Each document tab (Upload, Sitemap, Snippet) now has a search bar to find files by name, and the Upload tab has a document type filter (All / General / Project Knowledge)
 - **Bulk delete for Knowledge Base documents** — Select multiple documents using checkboxes, then delete them all at once. "Select all" checks the current page; selections persist across pages
 - **Pagination for Knowledge Base tables** — Document tables are now paginated (20 per page) with page navigation, replacing the previous flat list that showed everything at once. You can choose how many entries to show per page (20, 50, 100, 200, or All)
-- **Shareable Knowledge Base URLs** — Filter selections, search queries, page number, and per-page setting are now reflected in the URL, so you can share or bookmark a specific view
+- **Sortable Knowledge Base columns** — Click on Filename, Status, Chunks, or Date column headers to sort ascending/descending. Sort state is also reflected in the URL
+- **Shareable Knowledge Base URLs** — Filter selections, search queries, page number, per-page setting, and sort order are now reflected in the URL, so you can share or bookmark a specific view
+
+### Improved
+- **Locale-aware date format** — Dates in Knowledge Base tables now display in DD.MM.YYYY format based on the selected language, instead of the browser's default format
 
 ### Improved
 - **Cleaner formatting in Knowledge Base answers** — Fixed double-formatting where project names and module names appeared with both bold and code styling; now uses bold only for better readability in MS Teams

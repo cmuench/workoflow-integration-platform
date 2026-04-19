@@ -552,6 +552,27 @@ th.kb-cb-col, td.kb-cb-col {
     padding: 0.5rem;
 }
 
+/* Sortable table headers */
+.kb-sort-th {
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+.kb-sort-th:hover {
+    color: var(--color-primary);
+}
+.kb-sort-active {
+    color: var(--color-primary);
+}
+.kb-sort-icon {
+    font-size: 0.7em;
+    margin-left: 0.3rem;
+    opacity: 0.5;
+}
+.kb-sort-active .kb-sort-icon {
+    opacity: 1;
+}
+
 /* Pagination info */
 .kb-pagination-info {
     text-align: center;
@@ -586,6 +607,16 @@ const tabSelections = { upload: new Set(), web_crawl: new Set(), snippet: new Se
 const tabSearchQueries = { upload: '', web_crawl: '', snippet: '' };
 let docTypeFilter = 'all';
 let searchTimeout = null;
+let sortColumn = 'created_at';
+let sortDir = 'desc';
+const SORTABLE_COLUMNS = ['filename', 'status', 'chunk_count', 'created_at'];
+const DATE_LOCALE = '{{ app.request.locale }}';
+const DATE_FMT = new Intl.DateTimeFormat(DATE_LOCALE, { day: '2-digit', month: '2-digit', year: 'numeric' });
+function formatDate(dateStr) {
+    if (!dateStr) return '-';
+    return DATE_FMT.format(new Date(dateStr));
+}
+
 const TAB_EXPLANATIONS = {
     upload: {{ 'kb.tab_explanation.upload'|trans|json_encode|raw }},
     sitemap: {{ 'kb.tab_explanation.sitemap'|trans|json_encode|raw }},
@@ -603,6 +634,10 @@ function updateUrl() {
     if (docTypeFilter !== 'all') params.set('doc_type', docTypeFilter);
     const search = tabSearchQueries[sourceType];
     if (search) params.set('search', search);
+    if (sortColumn !== 'created_at' || sortDir !== 'desc') {
+        params.set('sort', sortColumn);
+        params.set('dir', sortDir);
+    }
     const qs = params.toString();
     history.replaceState(null, '', `${window.location.pathname}${qs ? '?' + qs : ''}#${activeTab}`);
 }
@@ -637,6 +672,14 @@ function restoreFromUrl() {
     if (params.has('page')) {
         const p = parseInt(params.get('page'), 10);
         if (p > 0) tabPages[sourceType] = p;
+    }
+    if (params.has('sort')) {
+        const s = params.get('sort');
+        if (SORTABLE_COLUMNS.includes(s)) sortColumn = s;
+    }
+    if (params.has('dir')) {
+        const d = params.get('dir');
+        if (d === 'asc' || d === 'desc') sortDir = d;
     }
     return tab;
 }
@@ -805,6 +848,29 @@ async function loadDocuments() {
     } catch (e) { console.error('Failed to load documents:', e); }
 }
 
+function sortTh(col, label, sourceType) {
+    const active = sortColumn === col;
+    const icon = active ? (sortDir === 'asc' ? ' ▲' : ' ▼') : ' ⇅';
+    const cls = active ? 'kb-sort-th kb-sort-active' : 'kb-sort-th';
+    return `<th class="${cls}" onclick="onSort('${col}', '${sourceType}')">${label}<span class="kb-sort-icon">${icon}</span></th>`;
+}
+
+function onSort(col, sourceType) {
+    if (sortColumn === col) {
+        sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+        sortColumn = col;
+        sortDir = col === 'created_at' ? 'desc' : 'asc';
+    }
+    tabPages.upload = 1;
+    tabPages.web_crawl = 1;
+    tabPages.snippet = 1;
+    renderFilteredDocuments('upload', 'documentsTable-upload');
+    renderFilteredDocuments('web_crawl', 'documentsTable-web_crawl');
+    renderFilteredDocuments('snippet', 'documentsTable-snippet');
+    updateUrl();
+}
+
 function getFilteredDocs(sourceType) {
     let docs = allDocuments.filter(d => d.source_type === sourceType);
     if (sourceType === 'upload' && docTypeFilter !== 'all') {
@@ -815,6 +881,16 @@ function getFilteredDocs(sourceType) {
         const lower = q.toLowerCase();
         docs = docs.filter(d => d.filename.toLowerCase().includes(lower));
     }
+    // Sort
+    const col = sortColumn;
+    const dir = sortDir === 'asc' ? 1 : -1;
+    docs.sort((a, b) => {
+        let va = a[col] ?? '';
+        let vb = b[col] ?? '';
+        if (col === 'chunk_count') return (va - vb) * dir;
+        if (col === 'created_at') return (va < vb ? -1 : va > vb ? 1 : 0) * dir;
+        return String(va).localeCompare(String(vb)) * dir;
+    });
     return docs;
 }
 
@@ -843,7 +919,11 @@ function renderFilteredDocuments(sourceType, containerId) {
 
     let html = '<div class="files-table"><table><thead><tr>';
     html += `<th class="kb-cb-col"><input type="checkbox" class="kb-checkbox" ${allVisibleSelected ? 'checked' : ''} onchange="toggleSelectAll('${sourceType}', this.checked)"></th>`;
-    html += '<th>{{ "kb.documents.filename"|trans }}</th><th>{{ "kb.documents.status"|trans }}</th><th>{{ "kb.documents.chunks"|trans }}</th><th>{{ "kb.documents.date"|trans }}</th><th>{{ "action.actions"|trans }}</th></tr></thead><tbody>';
+    html += sortTh('filename', '{{ "kb.documents.filename"|trans }}', sourceType);
+    html += sortTh('status', '{{ "kb.documents.status"|trans }}', sourceType);
+    html += sortTh('chunk_count', '{{ "kb.documents.chunks"|trans }}', sourceType);
+    html += sortTh('created_at', '{{ "kb.documents.date"|trans }}', sourceType);
+    html += '<th>{{ "action.actions"|trans }}</th></tr></thead><tbody>';
 
     placeholders.forEach(p => {
         html += `<tr class="row-uploading">
@@ -851,7 +931,7 @@ function renderFilteredDocuments(sourceType, containerId) {
             <td class="file-name">${p.filename}</td>
             <td><span class="status-badge status-uploading"><span class="badge-spinner"></span>{{ "kb.documents.uploading"|trans }}</span></td>
             <td>—</td>
-            <td>${new Date().toLocaleDateString()}</td>
+            <td>${formatDate(new Date().toISOString())}</td>
             <td class="file-actions">—</td>
         </tr>`;
     });
@@ -864,7 +944,7 @@ function renderFilteredDocuments(sourceType, containerId) {
             <td class="file-name">${d.filename}</td>
             <td><span class="status-badge ${statusClass}">${d.status}</span>${d.error ? ` <small title="${d.error}" style="color:var(--danger-color);cursor:help;">&#9888;</small>` : ''}</td>
             <td>${d.chunk_count || 0}</td>
-            <td>${new Date(d.created_at).toLocaleDateString()}</td>
+            <td>${formatDate(d.created_at)}</td>
             <td class="file-actions">${sourceType === 'upload' && d.status === 'completed' ? `<a class="btn btn-small btn-secondary" href="${API_BASE}/documents/${d.id}/download">{{ "action.download"|trans }}</a> ` : ''}${sourceType === 'snippet' ? `<button class="btn btn-small btn-secondary" onclick="viewSnippet('${d.id}')">{{ "action.view"|trans }}</button> <button class="btn btn-small btn-primary" onclick="editSnippet('${d.id}')">{{ "action.edit"|trans }}</button> ` : ''}<button class="btn btn-small btn-danger" onclick="deleteDocument('${d.id}')">{{ "action.delete"|trans }}</button></td>
         </tr>`;
     });
@@ -1148,7 +1228,7 @@ function renderSourcesTable(sources) {
     }
     let html = '<div class="files-table"><table><thead><tr><th>{{ "kb.sources.source_file"|trans }}</th><th>{{ "kb.sources.type"|trans }}</th><th>{{ "kb.sources.source_type"|trans }}</th><th>{{ "kb.sources.chunks"|trans }}</th><th>{{ "kb.sources.indexed_at"|trans }}</th></tr></thead><tbody>';
     sources.forEach(s => {
-        html += `<tr><td>${s.source_file}</td><td>${s.document_type}</td><td>${s.source_type}</td><td>${s.chunk_count}</td><td>${s.indexed_at ? new Date(s.indexed_at).toLocaleDateString() : '-'}</td></tr>`;
+        html += `<tr><td>${s.source_file}</td><td>${s.document_type}</td><td>${s.source_type}</td><td>${s.chunk_count}</td><td>${s.indexed_at ? formatDate(s.indexed_at) : '-'}</td></tr>`;
     });
     html += '</tbody></table></div>';
     container.innerHTML = html;
@@ -1177,7 +1257,7 @@ function renderCrawlJobs(jobs) {
             <td class="file-name" title="${j.sitemap_url}">${j.sitemap_url}</td>
             <td><span class="status-badge ${statusClass}">${j.status}</span></td>
             <td>${progress}</td>
-            <td>${new Date(j.created_at).toLocaleDateString()}</td>
+            <td>${formatDate(j.created_at)}</td>
             <td class="file-actions"><button class="btn btn-small btn-danger" onclick="deleteCrawlJob('${j.id}')">{{ "action.delete"|trans }}</button></td>
         </tr>`;
     });
