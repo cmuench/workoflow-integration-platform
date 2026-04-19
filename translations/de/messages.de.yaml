@@ -913,3 +913,14 @@ kb:
     selected: ausgewählt
     delete_selected: Ausgewählte löschen
     clear_selection: Auswahl aufheben
+  api_helper: API-Zugriff
+  api_access: API-Zugriff
+  api:
+    upload_file: Datei hochladen
+    upload_with_url: Datei mit Quell-URL hochladen
+    create_snippet: Textbaustein erstellen
+    snippet_with_url: Textbaustein mit Quell-URL
+    list_documents: Dokumente auflisten
+    hint_params: "Tipp: document_type kann 'general' oder 'project_knowledge' sein. source_url ist optional und wird angezeigt, wenn die KI dieses Dokument referenziert."
+    no_token: Sie müssen zuerst einen API-Token generieren, um Ihre Wissensdatenbank per API zu verwalten.
+    generate_token: Token im Profil generieren

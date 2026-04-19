@@ -909,3 +909,14 @@ kb:
     selected: selected
     delete_selected: Delete Selected
     clear_selection: Clear Selection
+  api_helper: API Access
+  api_access: API Access
+  api:
+    upload_file: Upload a File
+    upload_with_url: Upload File with Source URL
+    create_snippet: Create a Text Snippet
+    snippet_with_url: Snippet with Source URL
+    list_documents: List Documents
+    hint_params: "Tip: document_type can be 'general' or 'project_knowledge'. source_url is optional and shown when AI references this document."
+    no_token: You need to generate an API token first to manage your Knowledge Base via API.
+    generate_token: Generate Token in Profile

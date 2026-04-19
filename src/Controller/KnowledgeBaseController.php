@@ -32,8 +32,11 @@ class KnowledgeBaseController extends AbstractController
             return $this->redirectToRoute('app_tenant_create');
         }
 
+        $userOrganisation = $user->getCurrentUserOrganisation($sessionOrgId);
+
         return $this->render('knowledge_base/index.html.twig', [
             'organisation' => $organisation,
+            'userOrganisation' => $userOrganisation,
         ]);
     }
 

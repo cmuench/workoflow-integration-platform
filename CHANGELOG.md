@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [Unreleased] - 2026-04-20
 
 ### Added
+- **Knowledge Base API** — Upload files and create text snippets via API using your personal access token (X-Prompt-Token), enabling automation from scripts, CI/CD pipelines, or AI agents
+- **API Access section on Knowledge Base page** — Click "API Access" on the Knowledge Base page to see ready-to-use curl commands for uploading files, creating snippets, and listing documents
 - **Email-based login** — You can now enter your email address directly on the login page to receive a one-time login link via email, no need to message the bot first
 
 ### Improved

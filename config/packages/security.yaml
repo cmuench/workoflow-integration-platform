@@ -25,6 +25,12 @@ security:
             custom_authenticators:
                 - App\Security\PromptApiTokenAuthenticator
 
+        kb_api:
+            pattern: ^/api/kb
+            stateless: true
+            custom_authenticators:
+                - App\Security\PromptApiTokenAuthenticator
+
         api:
             pattern: ^/api
             stateless: true
@@ -47,6 +53,7 @@ security:
     access_control:
         - { path: ^/api/mcp, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/prompts, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/kb, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/api/tenant, roles: PUBLIC_ACCESS }
         - { path: ^/api/integration, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }

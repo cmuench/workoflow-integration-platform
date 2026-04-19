@@ -911,3 +911,14 @@ kb:
     selected: pasirinkta
     delete_selected: Ištrinti pasirinktus
     clear_selection: Išvalyti pasirinkimą
+  api_helper: API prieiga
+  api_access: API prieiga
+  api:
+    upload_file: Įkelti failą
+    upload_with_url: Įkelti failą su šaltinio URL
+    create_snippet: Sukurti teksto fragmentą
+    snippet_with_url: Fragmentas su šaltinio URL
+    list_documents: Dokumentų sąrašas
+    hint_params: "Patarimas: document_type gali būti 'general' arba 'project_knowledge'. source_url yra neprivalomas ir rodomas, kai AI nurodo šį dokumentą."
+    no_token: Pirmiausia turite sugeneruoti API raktą, kad galėtumėte valdyti Žinių bazę per API.
+    generate_token: Generuoti raktą profilyje
