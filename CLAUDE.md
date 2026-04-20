@@ -432,3 +432,31 @@ docker-compose -f docker-compose-prod.yml restart frankenphp
 ```
 
 The `docker-compose-prod.yml` uses `external: true` volumes that reference existing production data. Using the default `docker-compose.yml` creates new prefixed volumes and disconnects from production data.
+
+### Production Server Layout
+
+**Host**: `val-workoflow-prod` (8 GB RAM, requires `sudo -iu docker` for Docker access)
+
+**Docker setup directories** (`/home/docker/docker-setups/`):
+- `workoflow-integration-platform/` — Symfony app (uses `docker-compose-prod.yml`)
+- `n8n/` — AI stack: orchestrator, litellm, docling, qdrant, phoenix, teams-bot, minio, crawl4ai, searxng, rustfs, tika, gotenberg, pptx-api (uses `docker-compose.yaml`)
+- `workoflow-metrics/` — Grafana monitoring
+- `workoflow-pptx/` — PPTX generator
+- `workoflow-rag/` — RAG services
+- `n8n-monitoring/` — Elastic metricbeat
+
+**Key containers and ports** (n8n/ stack):
+| Container | Port | Purpose |
+|---|---|---|
+| `adk-orchestrator` | 8080 | Workoflow AI orchestrator |
+| `litellm` | 4000 | LLM proxy (mem limit: 1G) |
+| `workoflow-docling` | 5001 | Document parsing/ML (mem limit: 2G) |
+| `qdrant` | 6333/6334 | Vector DB (mem limit: 1G) |
+| `phoenix` | 6006 | Trace observability |
+| `n8n-minio-1` | 9000/9001 | S3 object storage |
+| `workoflow-rustfs` | 9004/9007 | Knowledge base file storage |
+| `workoflow-crawl4ai` | 11235 | Web crawling |
+| `n8n-workoflow-teams-bot-1` | 3978 | MS Teams bot |
+| `n8n-workoflow-mcp-1` | 9006 | Workoflow MCP server |
+
+**n8n services** are disabled by default (behind `profiles: ["n8n"]`). Re-enable with `docker compose --profile n8n up -d`.
