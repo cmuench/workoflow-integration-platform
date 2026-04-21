@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased] - 2026-04-21
+
+### Improved
+- **Bot now asks you to narrow down overly broad requests** — Instead of attempting requests that are too large for the available tools (e.g., bulk exports or multi-year analyses), the assistant will explain the limitation and ask you to be more specific
+
 ## [Unreleased] - 2026-04-20
 
 ### Added
