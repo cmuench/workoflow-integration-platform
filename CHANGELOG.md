@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased] - 2026-04-22
+
+### Added
+- **Prompt testing script** — New `scripts/execute_prompt.sh` helper sends a prompt to the AI orchestrator and returns the full response, useful for debugging and verifying knowledge base search results
+
+### Fixed
+- **Knowledge Base search now finds specific terms in large documents** — Searches for niche terms like "CAD" that appear inside bigger document sections were previously missed; the search now casts a wider net so keyword-matched content surfaces reliably
+
 ## [Unreleased] - 2026-04-21
 
 ### Improved
