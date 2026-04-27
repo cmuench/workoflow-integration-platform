@@ -4,12 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-##  2026-04-27
+## [Unreleased] - 2026-04-27
+
+### Added
+- **AI assistant skill guides** — Added built-in guides for common workflows: adding new integrations, deploying to production, managing translations, running API tests, investigating Sentry errors, and diagnosing production issues. These load automatically when relevant, so the assistant has the right context without needing to re-read documentation each time.
+
+### Changed
+- **Streamlined project documentation** — Reorganized developer documentation so the AI assistant loads detailed guides on-demand instead of all at once, resulting in faster and more focused responses
 
 ### Fixed
 - **Jira issue creation** no longer fails when fields like "Reporter" are not available on the project's create screen — unavailable fields are automatically skipped and can be set via update after creation
 
-##  2026-04-22
+## [Unreleased] - 2026-04-22
 
 ### Added
 - **Prompt testing script** — New `scripts/execute_prompt.sh` helper sends a prompt to the AI orchestrator and returns the full response, useful for debugging and verifying knowledge base search results
