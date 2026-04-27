@@ -38,12 +38,12 @@ Key differentiators:
 
 | Component | Technology |
 |-----------|------------|
-| Backend | PHP 8.4, Symfony 7.2 |
+| Backend | PHP 8.5, Symfony 8.0 |
 | Runtime | FrankenPHP (Caddy) |
-| Database | MariaDB 11.2 |
-| Cache | Redis 7 |
+| Database | MariaDB 11.8 |
+| Cache | Redis 8 |
 | Storage | MinIO (S3-compatible) |
-| Container | Docker & Docker Compose |
+| Local Dev | DDEV |
 
 ## Architecture
 
@@ -74,29 +74,37 @@ Key differentiators:
 
 ### Prerequisites
 
-- Docker & Docker Compose
-- Git
+- [DDEV](https://ddev.readthedocs.io/en/stable/users/install/ddev-installation/) v1.24+
+- Docker (Docker Desktop, OrbStack, or Colima)
 - Google OAuth2 credentials (for user authentication)
 
 ### Development Setup
 
 ```bash
-# 1. Clone repository
+# 1. Clone and enter repository
 git clone <repository-url>
 cd workoflow-integration-platform
 
-# 2. Run setup script
-./setup.sh dev
+# 2. Copy environment file and fill in secrets
+cp .env.dist .env
+# → Set GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, ENCRYPTION_KEY, JWT_PASSPHRASE
 
-# 3. Configure environment variables in .env
-GOOGLE_CLIENT_ID=your_client_id
-GOOGLE_CLIENT_SECRET=your_client_secret
-ENCRYPTION_KEY=your_32_character_encryption_key
+# 3. Generate JWT keys
+mkdir -p config/jwt
+openssl genpkey -out config/jwt/private.pem -algorithm RSA -pkeyopt rsa_keygen_bits:4096 \
+  -aes256 -pass pass:$(grep JWT_PASSPHRASE .env | cut -d= -f2)
+openssl pkey -in config/jwt/private.pem -out config/jwt/public.pem -pubout \
+  -passin pass:$(grep JWT_PASSPHRASE .env | cut -d= -f2)
 
-# 4. Access the application
-# Application: http://localhost:3979
-# MinIO Console: http://localhost:9001 (admin/workoflow123)
+# 4. Start DDEV (pulls images, builds, runs setup automatically)
+ddev start
 ```
+
+- **Application**: https://workoflow.ddev.site
+- **Mailpit** (email catcher): https://workoflow.ddev.site:8026
+- **MinIO Console**: http://localhost:9003 (workoflow / workoflow123)
+
+For the full local development guide see [docs/DDEV.md](docs/DDEV.md).
 
 ### Production Deployment
 
@@ -215,29 +223,29 @@ All critical actions are logged with:
 
 ```bash
 # Run all checks (PHPStan + PHP CodeSniffer)
-docker-compose exec frankenphp composer code-check
+ddev composer code-check
 
 # Static analysis (level 6)
-docker-compose exec frankenphp composer phpstan
+ddev composer phpstan
 
 # Check coding standards (PSR-12)
-docker-compose exec frankenphp composer phpcs
+ddev composer phpcs
 
 # Auto-fix coding standard violations
-docker-compose exec frankenphp composer phpcbf
+ddev composer phpcbf
 ```
 
 ### Database Schema
 
 ```bash
 # View pending schema changes
-docker-compose exec frankenphp php bin/console doctrine:schema:update --dump-sql
+ddev exec php bin/console doctrine:schema:update --dump-sql
 
 # Apply schema updates
-docker-compose exec frankenphp php bin/console doctrine:schema:update --force
+ddev exec php bin/console doctrine:schema:update --force
 
 # Clear cache
-docker-compose exec frankenphp php bin/console cache:clear
+ddev exec php bin/console cache:clear
 ```
 
 ### Adding New Integrations
