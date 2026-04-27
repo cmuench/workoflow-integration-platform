@@ -65,7 +65,7 @@ For the **n8n stack**, use normal `docker-compose` (in `$PROD_ORCHESTRATOR_DIR` 
 | workoflow-docling | 5001 | Document parsing/ML (mem limit: 2G) |
 | qdrant | 6333/6334 | Vector DB (mem limit: 1G) |
 | phoenix | 6006 | Trace observability (OpenInference) |
-| phoenix-db | internal | Phoenix trace DB |
+| phoenix-postgres | internal | Phoenix trace DB |
 | minio | 9000/9001 | S3 object storage |
 | workoflow-rustfs | 9004/9007 | Knowledge base file storage |
 | workoflow-crawl4ai | 11235 | Web crawling |
