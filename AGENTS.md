@@ -7,11 +7,14 @@ If you have read this file, greet me with "Hey Workoflow Dev"
 ## Quick Reference
 
 - **Tech**: PHP 8.5, Symfony 8.0, FrankenPHP, Stimulus JS, SCSS
-- **App**: http://localhost:3979
-- **Code check**: `docker-compose exec frankenphp composer code-check`
-- **Build assets**: `docker-compose exec frankenphp npm run build`
-- **Clear cache**: `docker-compose exec frankenphp php bin/console cache:clear`
-- **Schema update**: `docker-compose exec frankenphp php bin/console doctrine:schema:update --force`
+- **App**: https://workoflow.ddev.site
+- **MinIO Console**: http://localhost:9003 (workoflow / workoflow123)
+- **Code check**: `ddev composer code-check`
+- **Build assets**: `ddev npm run build`
+- **Clear cache**: `ddev exec php bin/console cache:clear`
+- **Schema update**: `ddev exec php bin/console doctrine:schema:update --force`
+- **Start**: `ddev start` | **Stop**: `ddev stop` | **SSH**: `ddev ssh`
+- **Logs**: `ddev logs` | **Worker status**: `ddev exec supervisorctl status`
 
 ## Skills (use these instead of re-reading docs)
 
@@ -42,7 +45,7 @@ If you have read this file, greet me with "Hey Workoflow Dev"
     - Counter-example: "Modified processReturn function to skip confirmAddress parameter"
 
 2. **Code Quality Verification**:
-    - **ALWAYS** run `docker-compose exec frankenphp composer code-check` after code changes
+    - **ALWAYS** run `ddev composer code-check` after code changes
     - This runs both PHPStan (static analysis, level 6) and PHP CodeSniffer (PSR-12)
     - Auto-fix coding standards: `composer phpcbf`
 
@@ -54,13 +57,13 @@ If you have read this file, greet me with "Hey Workoflow Dev"
     - Update `docs/global-concept.md` for large infrastructure or feature changes only
 
 5. **Orchestrator Agent Cache**:
-    - Clear after deploying new orchestrator agents: `docker-compose exec frankenphp php bin/console cache:pool:clear cache.app`
+    - Clear after deploying new orchestrator agents: `ddev exec php bin/console cache:pool:clear cache.app`
 
 6. **UI/Styling Guidelines**:
     - Reference `CONCEPT/SYMFONY_IMPLEMENTATION_GUIDE.md` for UI tasks
     - Add CSS to `assets/styles/app.scss`, NOT inline
     - Use CSS custom properties (`var(--space-md)`, etc.)
-    - Run `docker-compose exec frankenphp npm run build` after SCSS changes
+    - Run `ddev npm run build` after SCSS changes
 
 ### Main Features
 - OAuth2 Login (Google, Azure/Microsoft, HubSpot, Wrike)
@@ -82,7 +85,7 @@ If you have read this file, greet me with "Hey Workoflow Dev"
 ### Tech Stack
 - **Backend**: PHP 8.5, Symfony 8.0, FrankenPHP
 - **Frontend**: Stimulus JS, SCSS, Webpack Encore
-- **Infrastructure**: Docker & Docker Compose (see `docker-compose.yml` for service versions)
+- **Infrastructure**: DDEV (FrankenPHP, MariaDB, Redis, MinIO) — see `.ddev/` for service config
 
 ### Design Principles
 

@@ -1,0 +1,16 @@
+#ddev-silent-no-warn
+services:
+  redis:
+    image: redis:8-alpine
+    container_name: ddev-${DDEV_SITENAME}-redis
+    restart: "no"
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: $DDEV_APPROOT
+    expose:
+      - "6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
