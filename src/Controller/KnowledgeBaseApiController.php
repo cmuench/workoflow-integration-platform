@@ -114,6 +114,30 @@ class KnowledgeBaseApiController extends AbstractController
         return $this->json($result, $statusCode);
     }
 
+    #[Route('/documents/{docId}', name: 'api_kb_document_delete', methods: ['DELETE'])]
+    public function deleteDocument(Request $request, string $docId): JsonResponse
+    {
+        $auth = $this->authenticateToken($request);
+        if ($auth instanceof JsonResponse) {
+            return $auth;
+        }
+
+        [$userOrganisation, $user, $organisation] = $auth;
+
+        $result = $this->kbService->deleteDocument($organisation, $docId);
+
+        $this->auditLogService->logWithOrganisation(
+            'api.kb.document.delete',
+            $organisation,
+            $user,
+            ['doc_id' => $docId]
+        );
+
+        $statusCode = isset($result['error']) ? Response::HTTP_BAD_REQUEST : Response::HTTP_OK;
+
+        return $this->json($result, $statusCode);
+    }
+
     #[Route('/documents', name: 'api_kb_documents', methods: ['GET'])]
     public function documents(Request $request): JsonResponse
     {
