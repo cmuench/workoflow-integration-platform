@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased] - 2026-04-22
+##  2026-04-27
+
+### Fixed
+- **Jira issue creation** no longer fails when fields like "Reporter" are not available on the project's create screen — unavailable fields are automatically skipped and can be set via update after creation
+
+##  2026-04-22
 
 ### Added
 - **Prompt testing script** — New `scripts/execute_prompt.sh` helper sends a prompt to the AI orchestrator and returns the full response, useful for debugging and verifying knowledge base search results
@@ -12,12 +17,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - **Knowledge Base search now finds specific terms in large documents** — Searches for niche terms like "CAD" that appear inside bigger document sections were previously missed; the search now casts a wider net so keyword-matched content surfaces reliably
 
-## [Unreleased] - 2026-04-21
+##  2026-04-21
 
 ### Improved
 - **Bot now asks you to narrow down overly broad requests** — Instead of attempting requests that are too large for the available tools (e.g., bulk exports or multi-year analyses), the assistant will explain the limitation and ask you to be more specific
 
-## [Unreleased] - 2026-04-20
+##  2026-04-20
 
 ### Added
 - **Knowledge Base API** — Upload files and create text snippets via API using your personal access token (X-Prompt-Token), enabling automation from scripts, CI/CD pipelines, or AI agents
@@ -28,7 +33,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Source URL indicator in Knowledge Base tables** — Documents and snippets with a source URL now show a small link icon next to the filename; hover to see the URL, click to open it in a new tab
 - **Branded login email** — The magic link email now features the Workoflow logo, valantic branding, and an Outlook-compatible light theme design
 
-## [Unreleased] - 2026-04-19
+##  2026-04-19
 
 ### Added
 - **Knowledge Base answers now include clickable links** — When uploaded documents or snippets contain URLs (e.g., GitLab repos, internal service links), the assistant now surfaces them as clickable links in its answers instead of requiring you to ask separately
@@ -45,12 +50,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Improved
 - **Cleaner formatting in Knowledge Base answers** — Fixed double-formatting where project names and module names appeared with both bold and code styling; now uses bold only for better readability in MS Teams
 
-## [Unreleased] - 2026-04-18
+##  2026-04-18
 
 ### Fixed
 - **MCP tools now work reliably with Claude Code and other AI clients** — Fixed invalid JSON schemas from remote Atlassian MCP tools that prevented AI agents from loading the full tool list
 
-## [Unreleased] - 2026-04-16
+##  2026-04-16
 
 ### Added
 - **Document type selection for Knowledge Base uploads** — When uploading files, you can now choose a document type ("General" or "Project Knowledge") so uploaded content is categorised for better search results
@@ -59,7 +64,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - **Knowledge Base downloads now keep the original file extension** — Files with spaces in their name (e.g. "L4.G09 - Checkliste Dokumentenerstellung.docx") were downloaded without a file extension; they now download with the correct name and type
 
-## [Unreleased] - 2026-04-15
+##  2026-04-15
 
 ### Fixed
 - **Assistant now respects "in SharePoint / in Jira" requests** — When you explicitly name a system in your message (e.g. "Findest du dazu etwas im SharePoint?"), the assistant now routes directly to that integration instead of defaulting to the internal knowledge base. Also stops the assistant from claiming it searched SharePoint when it only searched the knowledge base.
@@ -67,7 +72,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Improved
 - **Visible feedback while uploading Knowledge Base files** — Files now appear instantly in the Upload Pipeline with an "Uploading…" status as soon as you click Upload, instead of waiting until the upload finishes. Each file refreshes individually so you see progress as it moves through upload → pending → processing → completed.
 
-## [Unreleased] - 2026-04-14
+##  2026-04-14
 
 ### Improved
 - **Faster AI response times** — Optimised the main agent's routing prompt so the AI takes less time to start working on your request

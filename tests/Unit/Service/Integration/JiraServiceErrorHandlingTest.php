@@ -28,10 +28,11 @@ class JiraServiceErrorHandlingTest extends TestCase
     }
 
     /**
-     * When getCreateFieldMetadata fails (e.g. invalid project/issueType),
-     * createIssue should throw RuntimeException with code 400 and helpful suggestion.
+     * When getCreateFieldMetadata fails (e.g. network error), createIssue should
+     * log a warning and proceed to attempt the create anyway (graceful fallback).
+     * Fields are sent without schema-based validation; Jira validates on its end.
      */
-    public function testCreateIssueWrapsMetadataFailureAs400(): void
+    public function testCreateIssueProcedesWhenMetadataFetchFails(): void
     {
         $httpClient = new MockHttpClient([
             // getCreateFieldMetadata call returns 404
@@ -39,33 +40,26 @@ class JiraServiceErrorHandlingTest extends TestCase
                 json_encode(['errorMessages' => ["Project 'INVALID' not found"], 'errors' => []]),
                 ['http_code' => 404]
             ),
+            // The actual create-issue POST succeeds (fallback proceeds)
+            new MockResponse(
+                json_encode(['id' => '10001', 'key' => 'INVALID-1', 'self' => 'https://test.atlassian.net/rest/api/3/issue/10001']),
+                ['http_code' => 201]
+            ),
         ]);
 
         $service = $this->createService($httpClient);
 
-        try {
-            $service->createIssue($this->credentials, [
-                'projectKey' => 'INVALID',
-                'issueTypeId' => '10004',
-                'summary' => 'Test issue',
-                'customFields' => [
-                    'customfield_13211' => ['id' => '11702'],
-                ],
-            ]);
-            $this->fail('Expected RuntimeException was not thrown');
-        } catch (\RuntimeException $e) {
-            $this->assertEquals(400, $e->getCode(), 'Exception code should be 400');
-            $this->assertStringContainsString(
-                'Failed to prepare custom fields',
-                $e->getMessage(),
-                'Error message should indicate custom field preparation failure'
-            );
-            $this->assertStringContainsString(
-                'jira_update_issue',
-                $e->getMessage(),
-                'Error message should suggest the create-then-update workaround'
-            );
-        }
+        // Should NOT throw — metadata failure is swallowed, create proceeds
+        $result = $service->createIssue($this->credentials, [
+            'projectKey' => 'INVALID',
+            'issueTypeId' => '10004',
+            'summary' => 'Test issue',
+            'customFields' => [
+                'customfield_13211' => ['id' => '11702'],
+            ],
+        ]);
+
+        $this->assertEquals('INVALID-1', $result['key']);
     }
 
     /**
@@ -204,5 +198,159 @@ class JiraServiceErrorHandlingTest extends TestCase
                 $e->getMessage()
             );
         }
+    }
+
+    /**
+     * When reporter is not on the create screen, createIssue should skip it
+     * and succeed without sending reporter to Jira.
+     */
+    public function testCreateIssueSkipsReporterWhenNotOnCreateScreen(): void
+    {
+        $metadataResponse = json_encode([
+            'fields' => [
+                ['fieldId' => 'summary', 'schema' => ['type' => 'string']],
+                ['fieldId' => 'customfield_13211', 'schema' => ['type' => 'option', 'custom' => 'com.atlassian.jira.plugin.system.customfieldtypes:radiobuttons']],
+                // NOTE: 'reporter' is NOT in this list — not on the create screen
+            ],
+        ]);
+
+        $createResponse = json_encode([
+            'id' => '10001',
+            'key' => 'GH-200',
+            'self' => 'https://test.atlassian.net/rest/api/3/issue/10001',
+        ]);
+
+        $httpClient = new MockHttpClient([
+            new MockResponse($metadataResponse, ['http_code' => 200]),
+            new MockResponse($createResponse, ['http_code' => 201]),
+        ]);
+
+        $service = $this->createService($httpClient);
+
+        $result = $service->createIssue($this->credentials, [
+            'projectKey' => 'GH',
+            'issueTypeId' => '1',
+            'summary' => 'Test issue with reporter',
+            'reporterId' => '557058:e52602df-6873-4cd5-b72a-2015eee561f8',
+            'customFields' => [
+                'customfield_13211' => '11701',
+            ],
+        ]);
+
+        $this->assertEquals('GH-200', $result['key']);
+        $this->assertArrayHasKey('_skippedFields', $result);
+        $this->assertContains('reporter', $result['_skippedFields']);
+    }
+
+    /**
+     * When reporter IS on the create screen, createIssue should include it.
+     */
+    public function testCreateIssueIncludesReporterWhenOnCreateScreen(): void
+    {
+        $metadataResponse = json_encode([
+            'fields' => [
+                ['fieldId' => 'summary', 'schema' => ['type' => 'string']],
+                ['fieldId' => 'reporter', 'schema' => ['type' => 'user']],
+                ['fieldId' => 'customfield_13211', 'schema' => ['type' => 'option']],
+            ],
+        ]);
+
+        $createResponse = json_encode([
+            'id' => '10002',
+            'key' => 'PROJ-100',
+            'self' => 'https://test.atlassian.net/rest/api/3/issue/10002',
+        ]);
+
+        $httpClient = new MockHttpClient([
+            new MockResponse($metadataResponse, ['http_code' => 200]),
+            new MockResponse($createResponse, ['http_code' => 201]),
+        ]);
+
+        $service = $this->createService($httpClient);
+
+        $result = $service->createIssue($this->credentials, [
+            'projectKey' => 'PROJ',
+            'issueTypeId' => '10001',
+            'summary' => 'Test issue with reporter allowed',
+            'reporterId' => '557058:test-account-id',
+            'customFields' => [
+                'customfield_13211' => '11701',
+            ],
+        ]);
+
+        $this->assertEquals('PROJ-100', $result['key']);
+        // No skipped fields when reporter is on the create screen
+        $this->assertArrayNotHasKey('_skippedFields', $result);
+    }
+
+    /**
+     * When multiple optional fields are not on the create screen, all are skipped.
+     */
+    public function testCreateIssueSkipsMultipleUnavailableFields(): void
+    {
+        $metadataResponse = json_encode([
+            'fields' => [
+                ['fieldId' => 'summary', 'schema' => ['type' => 'string']],
+                ['fieldId' => 'priority', 'schema' => ['type' => 'priority']],
+                // No reporter, no labels, no components, no duedate
+            ],
+        ]);
+
+        $createResponse = json_encode([
+            'id' => '10003',
+            'key' => 'GH-201',
+            'self' => 'https://test.atlassian.net/rest/api/3/issue/10003',
+        ]);
+
+        $httpClient = new MockHttpClient([
+            new MockResponse($metadataResponse, ['http_code' => 200]),
+            new MockResponse($createResponse, ['http_code' => 201]),
+        ]);
+
+        $service = $this->createService($httpClient);
+
+        $result = $service->createIssue($this->credentials, [
+            'projectKey' => 'GH',
+            'issueTypeId' => '1',
+            'summary' => 'Test multiple skipped fields',
+            'reporterId' => '557058:test',
+            'labels' => ['bug'],
+            'dueDate' => '2026-12-31',
+        ]);
+
+        $this->assertEquals('GH-201', $result['key']);
+        $this->assertArrayHasKey('_skippedFields', $result);
+        $this->assertContains('reporter', $result['_skippedFields']);
+        $this->assertContains('labels', $result['_skippedFields']);
+        $this->assertContains('duedate', $result['_skippedFields']);
+    }
+
+    /**
+     * When no optional standard fields or custom fields are provided,
+     * metadata fetch is skipped for performance.
+     */
+    public function testCreateIssueWithOnlyRequiredFieldsSkipsMetadataFetch(): void
+    {
+        $createResponse = json_encode([
+            'id' => '10004',
+            'key' => 'GH-202',
+            'self' => 'https://test.atlassian.net/rest/api/3/issue/10004',
+        ]);
+
+        // Only ONE mock response — if metadata were fetched, this would fail
+        // because MockHttpClient would expect a second response
+        $httpClient = new MockHttpClient([
+            new MockResponse($createResponse, ['http_code' => 201]),
+        ]);
+
+        $service = $this->createService($httpClient);
+
+        $result = $service->createIssue($this->credentials, [
+            'projectKey' => 'GH',
+            'issueTypeId' => '1',
+            'summary' => 'Minimal issue',
+        ]);
+
+        $this->assertEquals('GH-202', $result['key']);
     }
 }
