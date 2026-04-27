@@ -918,6 +918,7 @@ kb:
     create_snippet: Creează un fragment de text
     snippet_with_url: Fragment cu URL sursă
     list_documents: Listează documente
+    delete_document: Șterge un document
     hint_params: "Sfat: document_type poate fi 'general' sau 'project_knowledge'. source_url este opțional și va fi afișat când AI-ul referențiază acest document."
     no_token: Trebuie să generați mai întâi un token API pentru a gestiona Baza de cunoștințe prin API.
     generate_token: Generează token în Profil

@@ -917,6 +917,7 @@ kb:
     create_snippet: Create a Text Snippet
     snippet_with_url: Snippet with Source URL
     list_documents: List Documents
+    delete_document: Delete a Document
     hint_params: "Tip: document_type can be 'general' or 'project_knowledge'. source_url is optional and shown when AI references this document."
     no_token: You need to generate an API token first to manage your Knowledge Base via API.
     generate_token: Generate Token in Profile

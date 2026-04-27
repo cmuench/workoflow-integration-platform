@@ -78,6 +78,16 @@
                                 </button>
                             </div>
                         </div>
+
+                        <div class="api-helper-item">
+                            <label><i class="fas fa-trash"></i> {{ 'kb.api.delete_document'|trans }}</label>
+                            <div class="curl-command-wrapper">
+                                <pre><code id="curlKbDelete">curl -X DELETE -H "X-Prompt-Token: {{ userOrganisation.personalAccessToken }}" "{{ app.request.schemeAndHttpHost }}/api/kb/documents/{doc_id}"</code></pre>
+                                <button type="button" class="btn btn-copy btn-sm" onclick="copyCurl(this, 'curlKbDelete')">
+                                    <i class="fas fa-copy"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="api-helper-footer">
