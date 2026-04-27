@@ -440,7 +440,7 @@ class JiraIntegration implements PersonalizedSkillInterface
                         'name' => 'reporterId',
                         'type' => 'string',
                         'required' => false,
-                        'description' => 'Reporter account ID (from jira_get_myself or jira_search_users). Get your own accountId using jira_get_myself first.'
+                        'description' => 'Reporter account ID (from jira_get_myself or jira_search_users). Note: automatically skipped if the reporter field is not available on the project create screen.'
                     ],
                     [
                         'name' => 'customFields',
