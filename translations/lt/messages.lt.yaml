@@ -919,6 +919,7 @@ kb:
     create_snippet: Sukurti teksto fragmentą
     snippet_with_url: Fragmentas su šaltinio URL
     list_documents: Dokumentų sąrašas
+    delete_document: Ištrinti dokumentą
     hint_params: "Patarimas: document_type gali būti 'general' arba 'project_knowledge'. source_url yra neprivalomas ir rodomas, kai AI nurodo šį dokumentą."
     no_token: Pirmiausia turite sugeneruoti API raktą, kad galėtumėte valdyti Žinių bazę per API.
     generate_token: Generuoti raktą profilyje

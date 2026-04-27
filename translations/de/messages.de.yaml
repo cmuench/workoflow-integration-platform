@@ -921,6 +921,7 @@ kb:
     create_snippet: Textbaustein erstellen
     snippet_with_url: Textbaustein mit Quell-URL
     list_documents: Dokumente auflisten
+    delete_document: Dokument löschen
     hint_params: "Tipp: document_type kann 'general' oder 'project_knowledge' sein. source_url ist optional und wird angezeigt, wenn die KI dieses Dokument referenziert."
     no_token: Sie müssen zuerst einen API-Token generieren, um Ihre Wissensdatenbank per API zu verwalten.
     generate_token: Token im Profil generieren
