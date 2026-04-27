@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Repository\UserRepository;
 use App\Service\MagicLinkService;
-use App\Service\ResendEmailService;
+use App\Service\EmailService;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -38,7 +38,7 @@ class AuthController extends AbstractController
         Request $request,
         UserRepository $userRepository,
         MagicLinkService $magicLinkService,
-        ResendEmailService $resendEmailService,
+        EmailService $emailService,
         Environment $twig,
         LoggerInterface $logger,
     ): RedirectResponse {
@@ -79,7 +79,7 @@ class AuthController extends AbstractController
                     'app_url' => $appUrl,
                 ]);
 
-                $resendEmailService->sendMagicLinkEmail($email, $user->getName() ?? $email, $magicLink, $emailHtml);
+                $emailService->sendMagicLinkEmail($email, $user->getName() ?? $email, $magicLink, $emailHtml);
             }
         }
 
