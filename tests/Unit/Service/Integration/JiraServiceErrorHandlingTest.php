@@ -28,10 +28,11 @@ class JiraServiceErrorHandlingTest extends TestCase
     }
 
     /**
-     * When getCreateFieldMetadata fails (e.g. invalid project/issueType),
-     * createIssue should throw RuntimeException with code 400 and helpful suggestion.
+     * When getCreateFieldMetadata fails (e.g. network error), createIssue should
+     * log a warning and proceed to attempt the create anyway (graceful fallback).
+     * Fields are sent without schema-based validation; Jira validates on its end.
      */
-    public function testCreateIssueWrapsMetadataFailureAs400(): void
+    public function testCreateIssueProcedesWhenMetadataFetchFails(): void
     {
         $httpClient = new MockHttpClient([
             // getCreateFieldMetadata call returns 404
@@ -39,33 +40,26 @@ class JiraServiceErrorHandlingTest extends TestCase
                 json_encode(['errorMessages' => ["Project 'INVALID' not found"], 'errors' => []]),
                 ['http_code' => 404]
             ),
+            // The actual create-issue POST succeeds (fallback proceeds)
+            new MockResponse(
+                json_encode(['id' => '10001', 'key' => 'INVALID-1', 'self' => 'https://test.atlassian.net/rest/api/3/issue/10001']),
+                ['http_code' => 201]
+            ),
         ]);
 
         $service = $this->createService($httpClient);
 
-        try {
-            $service->createIssue($this->credentials, [
-                'projectKey' => 'INVALID',
-                'issueTypeId' => '10004',
-                'summary' => 'Test issue',
-                'customFields' => [
-                    'customfield_13211' => ['id' => '11702'],
-                ],
-            ]);
-            $this->fail('Expected RuntimeException was not thrown');
-        } catch (\RuntimeException $e) {
-            $this->assertEquals(400, $e->getCode(), 'Exception code should be 400');
-            $this->assertStringContainsString(
-                'Failed to prepare custom fields',
-                $e->getMessage(),
-                'Error message should indicate custom field preparation failure'
-            );
-            $this->assertStringContainsString(
-                'jira_update_issue',
-                $e->getMessage(),
-                'Error message should suggest the create-then-update workaround'
-            );
-        }
+        // Should NOT throw — metadata failure is swallowed, create proceeds
+        $result = $service->createIssue($this->credentials, [
+            'projectKey' => 'INVALID',
+            'issueTypeId' => '10004',
+            'summary' => 'Test issue',
+            'customFields' => [
+                'customfield_13211' => ['id' => '11702'],
+            ],
+        ]);
+
+        $this->assertEquals('INVALID-1', $result['key']);
     }
 
     /**

@@ -1774,63 +1774,131 @@ class JiraService
     {
         $url = $this->validateAndNormalizeUrl($credentials['url']);
 
-        // Build the fields object
+        // Map of optional standard field parameter names → Jira field IDs
+        $optionalFieldMap = [
+            'description' => 'description',
+            'priorityId' => 'priority',
+            'assigneeId' => 'assignee',
+            'labels' => 'labels',
+            'componentIds' => 'components',
+            'dueDate' => 'duedate',
+            'reporterId' => 'reporter',
+        ];
+
+        // Determine if we need to fetch create metadata:
+        // - when any optional standard field is provided, OR
+        // - when custom fields are provided
+        $hasOptionalFields = false;
+        foreach (array_keys($optionalFieldMap) as $param) {
+            if (!empty($issueData[$param])) {
+                $hasOptionalFields = true;
+                break;
+            }
+        }
+        $hasCustomFields = isset($issueData['customFields']) && is_array($issueData['customFields']);
+
+        // Fetch metadata and build allowed-fields set
+        $allowedFieldIds = null; // null = no metadata fetched, allow everything
+        $schemaMap = [];
+        if ($hasOptionalFields || $hasCustomFields) {
+            try {
+                $fieldMetadata = $this->getCreateFieldMetadata(
+                    $credentials,
+                    $issueData['projectKey'],
+                    $issueData['issueTypeId']
+                );
+                $allowedFieldIds = [];
+                foreach ($fieldMetadata['fields'] ?? [] as $field) {
+                    $fieldId = $field['fieldId'];
+                    $allowedFieldIds[] = $fieldId;
+                    $schemaMap[$fieldId] = $field['schema'] ?? [];
+                }
+            } catch (\Throwable $e) {
+                // If metadata fetch fails, proceed without validation.
+                // Fields will be sent as-is; Jira will validate on its end.
+                $this->logger->warning('Failed to fetch create field metadata, skipping field validation', [
+                    'project' => $issueData['projectKey'],
+                    'issueType' => $issueData['issueTypeId'],
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        // Build the required fields (always included)
         $fields = [
             'project' => ['key' => $issueData['projectKey']],
             'issuetype' => ['id' => $issueData['issueTypeId']],
             'summary' => $issueData['summary'],
         ];
 
-        // Add description if provided
+        // Add optional standard fields — only if available on create screen
+        $skippedFields = [];
+
         if (!empty($issueData['description'])) {
-            $fields['description'] = $this->convertPlainTextToADF($issueData['description']);
+            if ($allowedFieldIds === null || in_array('description', $allowedFieldIds, true)) {
+                $fields['description'] = $this->convertPlainTextToADF($issueData['description']);
+            } else {
+                $skippedFields[] = 'description';
+            }
         }
 
-        // Add optional standard fields
         if (!empty($issueData['priorityId'])) {
-            $fields['priority'] = ['id' => $issueData['priorityId']];
+            if ($allowedFieldIds === null || in_array('priority', $allowedFieldIds, true)) {
+                $fields['priority'] = ['id' => $issueData['priorityId']];
+            } else {
+                $skippedFields[] = 'priority';
+            }
         }
 
         if (!empty($issueData['assigneeId'])) {
-            $fields['assignee'] = ['id' => $issueData['assigneeId']];
+            if ($allowedFieldIds === null || in_array('assignee', $allowedFieldIds, true)) {
+                $fields['assignee'] = ['id' => $issueData['assigneeId']];
+            } else {
+                $skippedFields[] = 'assignee';
+            }
         }
 
         if (!empty($issueData['labels']) && is_array($issueData['labels'])) {
-            $fields['labels'] = $issueData['labels'];
+            if ($allowedFieldIds === null || in_array('labels', $allowedFieldIds, true)) {
+                $fields['labels'] = $issueData['labels'];
+            } else {
+                $skippedFields[] = 'labels';
+            }
         }
 
         if (!empty($issueData['componentIds']) && is_array($issueData['componentIds'])) {
-            $fields['components'] = array_map(fn($id) => ['id' => $id], $issueData['componentIds']);
+            if ($allowedFieldIds === null || in_array('components', $allowedFieldIds, true)) {
+                $fields['components'] = array_map(fn($id) => ['id' => $id], $issueData['componentIds']);
+            } else {
+                $skippedFields[] = 'components';
+            }
         }
 
         if (!empty($issueData['dueDate'])) {
-            $dueDate = $issueData['dueDate'];
-            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dueDate)) {
-                throw new \InvalidArgumentException(
-                    "Due date must be in YYYY-MM-DD format (e.g., 2025-12-25). Got: {$dueDate}"
-                );
+            if ($allowedFieldIds === null || in_array('duedate', $allowedFieldIds, true)) {
+                $dueDate = $issueData['dueDate'];
+                if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $dueDate)) {
+                    throw new \InvalidArgumentException(
+                        "Due date must be in YYYY-MM-DD format (e.g., 2025-12-25). Got: {$dueDate}"
+                    );
+                }
+                $fields['duedate'] = $dueDate;
+            } else {
+                $skippedFields[] = 'duedate';
             }
-            $fields['duedate'] = $dueDate;
         }
 
         if (!empty($issueData['reporterId'])) {
-            $fields['reporter'] = ['id' => $issueData['reporterId']];
+            if ($allowedFieldIds === null || in_array('reporter', $allowedFieldIds, true)) {
+                $fields['reporter'] = ['id' => $issueData['reporterId']];
+            } else {
+                $skippedFields[] = 'reporter';
+            }
         }
 
         // Add custom fields with auto-formatting
-        if (isset($issueData['customFields']) && is_array($issueData['customFields'])) {
+        if ($hasCustomFields) {
             try {
-                // Get field metadata to determine proper formatting
-                $fieldMetadata = $this->getCreateFieldMetadata(
-                    $credentials,
-                    $issueData['projectKey'],
-                    $issueData['issueTypeId']
-                );
-                $schemaMap = [];
-                foreach ($fieldMetadata['fields'] ?? [] as $field) {
-                    $schemaMap[$field['fieldId']] = $field['schema'] ?? [];
-                }
-
                 foreach ($issueData['customFields'] as $fieldId => $value) {
                     $schema = $schemaMap[$fieldId] ?? [];
                     $fields[$fieldId] = $this->formatCustomFieldValue($value, $schema);
@@ -1845,6 +1913,14 @@ class JiraService
             }
         }
 
+        if (!empty($skippedFields)) {
+            $this->logger->info('Skipped fields not available on Jira create screen', [
+                'project' => $issueData['projectKey'],
+                'issueType' => $issueData['issueTypeId'],
+                'skippedFields' => $skippedFields,
+            ]);
+        }
+
         $payload = ['fields' => $fields];
 
         try {
@@ -1857,7 +1933,17 @@ class JiraService
                 'json' => $payload
             ]);
 
-            return $response->toArray();
+            $result = $response->toArray();
+
+            // Inform the caller about skipped fields so the AI agent knows
+            if (!empty($skippedFields)) {
+                $result['_skippedFields'] = $skippedFields;
+                $result['_notice'] = 'Some fields were skipped because they are not available on the create screen for this project/issue type: '
+                    . implode(', ', $skippedFields)
+                    . '. Use jira_update_issue to set these fields after creation if needed.';
+            }
+
+            return $result;
         /** @phpstan-ignore-next-line catch.neverThrown */
         } catch (\Symfony\Component\HttpClient\Exception\ClientException $e) {
             $response = $e->getResponse();
