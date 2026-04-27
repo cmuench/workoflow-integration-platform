@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased] - 2026-04-27
+
+### Fixed
+- **Jira issue creation** no longer fails when fields like "Reporter" are not available on the project's create screen — unavailable fields are automatically skipped and can be set via update after creation
+
 ## [Unreleased] - 2026-04-22
 
 ### Added
